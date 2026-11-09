@@ -1,15 +1,6 @@
 # See config.example.yml for documentation.
-object_base: orig/GAMEID
+object_base: orig/SX8E52
 object: sys/main.dol
-hash: 0123456789abcdef0123456789abcdef01234567
-symbols: config/GAMEID/symbols.txt
-splits: config/GAMEID/splits.txt
-# Change this to match the linker version.
-# See config.example.yml for a list.
-mw_comment_version: 11
-
-modules:
-- object: files/module.rel
-  hash: 0123456789abcdef0123456789abcdef01234567
-  symbols: config/GAMEID/module/symbols.txt
-  splits: config/GAMEID/module/splits.txt
+hash: 86c308417c285edf5d2e76c474b773682ebb8bc2
+symbols: config/SX8E52/symbols.txt
+splits: config/SX8E52/splits.txt

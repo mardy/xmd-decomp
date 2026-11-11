@@ -19,3 +19,6 @@ Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.dtors      start:0x806CD220 end:0x806CD224 rename:.dtors
 	.dtors      start:0x806CD224 end:0x806CD228 rename:.dtors
 	.sdata      start:0x807CD1E0 end:0x807CD1E8
+
+sdk/wpad.c:
+	.text       start:0x802F2860 end:0x802F28E8

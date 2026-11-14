@@ -15,9 +15,9 @@ Sections:
 
 Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.text       start:0x802C2910 end:0x802C2980
-	.ctors      start:0x806CCF80 end:0x806CCF84 rename:.ctors
-	.dtors      start:0x806CD220 end:0x806CD224 rename:.dtors
-	.dtors      start:0x806CD224 end:0x806CD228 rename:.dtors
+	.ctors      start:0x806CCF80 end:0x806CCF84 rename:.ctors$10
+	.dtors      start:0x806CD220 end:0x806CD224 rename:.dtors$10
+	.dtors      start:0x806CD224 end:0x806CD228 rename:.dtors$15
 	.sdata      start:0x807CD1E0 end:0x807CD1E8
 
 sdk/wpad.c:

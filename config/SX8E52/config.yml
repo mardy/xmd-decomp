@@ -4,5 +4,5 @@ object: sys/main.dol
 hash: 86c308417c285edf5d2e76c474b773682ebb8bc2
 symbols: config/SX8E52/symbols.txt
 splits: config/SX8E52/splits.txt
-mw_comment_version: 11
+mw_comment_version: 14
 ldscript_template: config/SX8E52/ldscript.lcf

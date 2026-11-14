@@ -208,8 +208,8 @@ cflags_base = [
     "-RTTI off",
     "-fp_contract on",
     "-str reuse",
-    "-multibyte",  # For Wii compilers, replace with `-enc SJIS`
-    "-i include",
+    "-i src/sdk/RVL_SDK",
+    '-i src/sdk/PowerPC_EABI_Support/MSL/MSL_C',
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
     f"-DVERSION_{config.version}",
@@ -247,7 +247,7 @@ cflags_rel = [
     "-sdata2 0",
 ]
 
-config.linker_version = "GC/1.3.2"
+config.linker_version = "Wii/1.3"
 
 
 # Helper function for Dolphin libraries
@@ -282,6 +282,11 @@ def MatchingFor(*versions):
     return config.version in versions
 
 
+cflags_sdk = [
+    *cflags_runtime,
+    "-func_align 16",
+    "-i src/sdk/RVL_SDK/revolution",
+]
 config.warn_missing_config = True
 config.warn_missing_source = False
 config.libs = [
@@ -293,6 +298,14 @@ config.libs = [
         "objects": [
             Object(NonMatching, "Runtime.PPCEABI.H/global_destructor_chain.c"),
             Object(NonMatching, "Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"),
+        ],
+    },
+    {
+        "lib": "SDK",
+        "mw_version": config.linker_version,
+        "cflags": cflags_sdk,
+        "progress_category": "sdk",  # str | List[str]
+        "objects": [
             Object(Matching, "sdk/wpad.c"),
         ],
     },

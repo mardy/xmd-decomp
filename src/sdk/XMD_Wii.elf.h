@@ -1,11 +1,5 @@
 typedef unsigned char   undefined;
 
-typedef unsigned char    byte;
-typedef unsigned int    dword;
-typedef long long    longlong;
-typedef unsigned int    uint;
-typedef unsigned long    ulong;
-typedef unsigned long long    ulonglong;
 typedef unsigned char    undefined1;
 typedef unsigned short    undefined2;
 typedef unsigned int    undefined3;
@@ -14,9 +8,6 @@ typedef unsigned long long    undefined5;
 typedef unsigned long long    undefined6;
 typedef unsigned long long    undefined7;
 typedef unsigned long long    undefined8;
-typedef unsigned short    ushort;
-typedef short    wchar_t;
-typedef unsigned short    word;
 typedef struct _wpadcb_data_t _wpadcb_data_t, *P_wpadcb_data_t;
 
 struct _wpadcb_data_t {

@@ -1718,6 +1718,7 @@ void WPADDisconnect(WPADChannel chan) {
     WUDSetDeviceHistory(chan, NULL);
     __wpadDisconnect(chan, TRUE);
 }
+#endif
 
 WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1741,7 +1742,6 @@ WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut) {
 
     return status;
 }
-#endif
 
 WPADSamplingCallback *
 WPADSetSamplingCallback(WPADChannel chan, WPADSamplingCallback *cb) {

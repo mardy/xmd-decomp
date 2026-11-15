@@ -653,7 +653,6 @@ WPADResult WPADControlBLC(WPADChannel chan, WPADBLCCommand command,
                           WPADCallback *cb);
 
 void WPADRecalibrate(WPADChannel chan);
-BOOL WPADIsUsedCallbackByKPAD(void);
 void WPADSetCallbackByKPAD(BOOL isKPAD);
 
 #ifdef __cplusplus

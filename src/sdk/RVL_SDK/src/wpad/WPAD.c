@@ -28,6 +28,7 @@
 #include <revolution/sc/scsystem.h>
 #include <revolution/vi/vi.h>
 
+#if 0
 /*******************************************************************************
  * macros
  */
@@ -174,8 +175,10 @@ static OSAlarm _wpadManageAlarm;
 wpad_cb_st __rvl_wpadcb[WPAD_MAX_CONTROLLERS] __attribute__((aligned(0x20)));
 static WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
 static byte_t __wpadManageHandlerStack[0x1000] __attribute__((aligned(0x20)));
+#endif
 wpad_cb_st *__rvl_p_wpadcb[WPAD_MAX_CONTROLLERS];
 
+#if 0
 // .sdata
 static s32 _wpadOnReconnect = -1;
 static u16 _wpad_diff_count_threshold[WPAD_MAX_NZFILTERS] = { 6, 4, 6, 12 };
@@ -199,7 +202,10 @@ static u8 _wpadShutdownFlag;
 static s8 _wpadAfhChannel;
 static u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
 static BOOL _wpadInitialized;
-static BOOL _wpadUsedCallback;
+#endif
+//static BOOL _wpadUsedCallback;
+BOOL _wpadUsedCallback;
+#if 0
 __attribute__((weak)) BOOL _enabledBLK;
 __attribute__((weak)) BOOL _enabledTBL;
 __attribute__((weak)) BOOL _enabledTKO;
@@ -226,6 +232,10 @@ static u8 _wpadRegisterShutdownFunc;
 /*******************************************************************************
  * functions
  */
+
+#endif
+inline BOOL WPADIsUsedCallbackByKPAD(void) { return _wpadUsedCallback; }
+#if 0
 
 static void *__wpadNoAlloc(size_t size __attribute__((unused))) { return NULL; }
 
@@ -1731,6 +1741,7 @@ WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut) {
 
     return status;
 }
+#endif
 
 WPADSamplingCallback *
 WPADSetSamplingCallback(WPADChannel chan, WPADSamplingCallback *cb) {
@@ -1798,6 +1809,7 @@ WPADSetExtensionCallback(WPADChannel chan, WPADExtensionCallback *cb) {
     return old;
 }
 
+#if 0
 WPADDataFormat WPADGetDataFormat(WPADChannel chan) {
     WPADDataFormat format;
 
@@ -3443,8 +3455,6 @@ void WPADRecalibrate(WPADChannel chan) {
 BOOL WPADiIsDummyExtension(WPADChannel chan) { return _wpadDummyAttach[chan]; }
 #endif
 
-BOOL WPADIsUsedCallbackByKPAD(void) { return _wpadUsedCallback; }
-
 void WPADSetCallbackByKPAD(BOOL isKPAD) { _wpadUsedCallback = isKPAD; }
 
 static void __wpadCertFailed(WPADChannel chan) {
@@ -3915,3 +3925,4 @@ static void __wpadCertWork(WPADChannel chan) {
         __wpadCertFailed(chan);
     }
 }
+#endif

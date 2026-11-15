@@ -308,7 +308,7 @@ config.libs = [
         "cflags": cflags_sdk,
         "progress_category": "sdk",  # str | List[str]
         "objects": [
-            Object(Matching, "sdk/wpad.c"),
+            Object(Matching, "sdk/RVL_SDK/src/wpad/WPAD.c"),
         ],
     },
 ]

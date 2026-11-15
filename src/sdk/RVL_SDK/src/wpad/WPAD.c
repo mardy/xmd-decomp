@@ -85,8 +85,10 @@ static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo);
 static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success);
 static void __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len);
 static WPADResult __wpadGetConnectionStatus(WPADChannel chan);
+#endif
 static void __wpadDisconnectCallback(WPADChannel chan, WPADResult result);
 static inline void __wpadDisconnect(WPADChannel chan, BOOL afkDisconnect);
+#if 0
 
 static void __wpadInfoCallback(WPADChannel chan, WPADResult result);
 
@@ -1620,6 +1622,7 @@ __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len __attribute__((
 
     (void)result; // cool
 }
+#endif
 
 static WPADResult __wpadGetConnectionStatus(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1635,6 +1638,7 @@ static WPADResult __wpadGetConnectionStatus(WPADChannel chan) {
     return connStatus;
 }
 
+#if 0
 void WPADGetAccGravityUnit(
     WPADChannel chan, WPADAccGravityUnitType type, WPADAccGravityUnit *acc
 ) {
@@ -1670,6 +1674,7 @@ extern void __deadstrip2(void) {
     (void)"Failed assertion p_wpd->devType == WPAD_DEV_CLASSIC";
     (void)"Failed assertion left != NULL && right != NULL";
 }
+#endif
 
 static void __wpadDisconnectCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1718,7 +1723,6 @@ void WPADDisconnect(WPADChannel chan) {
     WUDSetDeviceHistory(chan, NULL);
     __wpadDisconnect(chan, TRUE);
 }
-#endif
 
 WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

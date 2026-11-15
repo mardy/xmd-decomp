@@ -286,6 +286,8 @@ cflags_sdk = [
     "-lang=c99",
     "-func_align 16",
     "-i src/sdk/RVL_SDK/revolution",
+    "-i src/sdk/PowerPC_EABI_Support/MSL",
+    "-i src/sdk/",
 ]
 config.warn_missing_config = True
 config.warn_missing_source = False

@@ -1638,7 +1638,6 @@ static WPADResult __wpadGetConnectionStatus(WPADChannel chan) {
     return connStatus;
 }
 
-#if 0
 void WPADGetAccGravityUnit(
     WPADChannel chan, WPADAccGravityUnitType type, WPADAccGravityUnit *acc
 ) {
@@ -1669,6 +1668,7 @@ void WPADGetAccGravityUnit(
     OSRestoreInterrupts(intrStatus);
 }
 
+#if 0
 // WPADGetCLTriggerThreshold ([SGLEA4]/MAP/GormitiDebug.MAP:25321)
 extern void __deadstrip2(void) {
     (void)"Failed assertion p_wpd->devType == WPAD_DEV_CLASSIC";

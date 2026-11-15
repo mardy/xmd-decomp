@@ -79,4 +79,22 @@ WPADConnectCallback *WPADSetConnectCallback(WPADChannel chan, WPADConnectCallbac
 
     return old;
 }
+
+WPADExtensionCallback *
+WPADSetExtensionCallback(WPADChannel chan, WPADExtensionCallback *cb) {
+    wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
+
+    OSAssert_Line(3434, (0 <= chan) && (chan < WPAD_MAX_CONTROLLERS));
+
+    WPADExtensionCallback *old;
+    BOOL intrStatus = OSDisableInterrupts();
+
+    old = p_wpd->extensionCB;
+    p_wpd->extensionCB = cb;
+
+    OSRestoreInterrupts(intrStatus);
+
+    return old;
+}
+
 #endif

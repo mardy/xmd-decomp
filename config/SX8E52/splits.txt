@@ -13,6 +13,12 @@ Sections:
 	.sbss2      type:bss align:32
 	.bss        type:bss align:64
 
+alltherest.c:
+	extab       start:0x80006750 end:0x800338C8
+	extabindex  start:0x80033EB8 end:0x80043D88
+	.text       start:0x80044644 end:0x80297D10
+	.ctors      start:0x806CCF84 end:0x806CD128
+
 Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.text       start:0x802C2910 end:0x802C2980
 	.ctors      start:0x806CCF80 end:0x806CCF84 rename:.ctors$10

@@ -180,6 +180,9 @@ static byte_t __wpadManageHandlerStack[0x1000] __attribute__((aligned(0x20)));
 #endif
 wpad_cb_st *__rvl_p_wpadcb[WPAD_MAX_CONTROLLERS];
 
+/* TODO remove, temporary: */
+extern WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
+
 #if 0
 // .sdata
 static s32 _wpadOnReconnect = -1;
@@ -1601,8 +1604,10 @@ static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
             (*p_wpd->connectCB)(chan, WPAD_ENODEV);
     }
 }
+#endif
 
-static void
+//static void
+void
 __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len __attribute__((unused))) {
     signed result __attribute__((unused));
 
@@ -1622,7 +1627,6 @@ __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len __attribute__((
 
     (void)result; // cool
 }
-#endif
 
 static WPADResult __wpadGetConnectionStatus(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

@@ -1857,7 +1857,6 @@ WPADSetExtensionCallback(WPADChannel chan, WPADExtensionCallback *cb) {
     return old;
 }
 
-#if 0
 WPADDataFormat WPADGetDataFormat(WPADChannel chan) {
     WPADDataFormat format;
 
@@ -1874,6 +1873,7 @@ WPADDataFormat WPADGetDataFormat(WPADChannel chan) {
     return format;
 }
 
+#if 0
 WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

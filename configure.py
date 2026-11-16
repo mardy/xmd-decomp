@@ -200,7 +200,7 @@ cflags_base = [
     "-fp hardware",
     "-Cpp_exceptions off",
     "-O4,p",
-    "-inline auto",
+    #"-inline auto",
     '-pragma "cats off"',
     '-pragma "warn_notinlined off"',
     "-maxerrors 1",
@@ -234,7 +234,7 @@ cflags_runtime = [
     *cflags_base,
     "-use_lmw_stmw on",
     "-gccinc",
-    "-inline auto",
+    #"-inline auto",
 ]
 
 # REL flags
@@ -285,6 +285,7 @@ cflags_sdk = [
     *cflags_runtime,
     "-lang=c99",
     "-func_align 16",
+    "-ipa file",
     "-i src/sdk/RVL_SDK/revolution",
     "-i src/sdk/PowerPC_EABI_Support/MSL",
     "-i src/sdk/",

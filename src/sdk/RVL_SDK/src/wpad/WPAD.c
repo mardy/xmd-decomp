@@ -1873,7 +1873,6 @@ WPADDataFormat WPADGetDataFormat(WPADChannel chan) {
     return format;
 }
 
-#if 0
 WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -1921,6 +1920,7 @@ WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     return status;
 }
 
+#if 0
 static void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

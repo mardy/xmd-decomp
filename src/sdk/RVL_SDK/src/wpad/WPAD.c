@@ -2632,7 +2632,6 @@ end:
     return status;
 }
 
-#if 0
 WPADResult WPADControlBLC(WPADChannel chan, WPADBLCCommand command, WPADCallback *cb) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -2714,6 +2713,7 @@ end:
     return status;
 }
 
+#if 0
 // clang-format off
 // Various functions in between ([SGLEA4]/MAP/GormitiDebug.MAP:25366-25379)
 extern void __deadstrip5(void)

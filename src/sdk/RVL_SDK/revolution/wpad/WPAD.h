@@ -9,7 +9,7 @@
 
 #include <revolution/wpad/WUD.h>
 
-#include <revolution/SC/scsystem.h>
+#include <revolution/sc/scsystem.h>
 
 /*******************************************************************************
  * macros

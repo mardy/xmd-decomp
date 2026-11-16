@@ -9,7 +9,7 @@
 
 #include <revolution/wpad/WPAD.h>
 
-#include <revolution/OS/OSTime.h>
+#include <revolution/os/OSTime.h>
 
 /*******************************************************************************
  * macros

@@ -295,7 +295,7 @@ struct WPADExtConfig {
 typedef struct /* possibly untagged, like kpad */
 {
     WPADGameInfo gameInfo; // size 0x038, offset 0x000
-    long signed at_0x038[2]; // size 0x008, offset 0x038	/* unknown */ //
+    long at_0x038[2]; // size 0x008, offset 0x038	/* unknown */ //
                              // WPADResult[2]? see __wpadGetGameInfo
     byte_t rxBufMain[RX_BUFFER_SIZE]; // size 0x060, offset 0x040
     byte_t rxBufs[2][RX_BUFFER_SIZE]; // size 0x060, offset 0x0a0
@@ -320,9 +320,9 @@ typedef struct /* possibly untagged, like kpad */
     u8 devType; // size 0x001, offset 0x905	/* possible name from assert */
     u8 devMode; // size 0x001, offset 0x906
     WUDDevHandle devHandle; // size 0x001, offset 0x907
-    int signed unk_0x908; // size 0x001, offset 0x908	/* unknown */
+    int unk_0x908; // size 0x001, offset 0x908	/* unknown */
     u8 rxBufIndex; // size 0x001, offset 0x90c
-    char signed unk_0x90d; // size 0x001, offset 0x90d	/* unknown */
+    signed char unk_0x90d; // size 0x001, offset 0x90d	/* unknown */
     u8 defaultDpdSize; // size 0x001, offset 0x90e	// maybe?
     u8 currentDpdCommand; // size 0x001, offset 0x90f
     u8 pendingDpdCommand; // size 0x001, offset 0x910
@@ -343,7 +343,7 @@ typedef struct /* possibly untagged, like kpad */
     u8 noParseMplsCount; // size 0x001, offset 0x939
     u8 isInitingMpls; // size 0x001, offset 0x93a	// maybe?
     u8 hasReadExtType2; // size 0x001, offset 0x93b	// maybe?
-    char unsigned unk_0x93c; // size 0x001, offset 0x93c	/* unknown */
+    unsigned char unk_0x93c; // size 0x001, offset 0x93c	/* unknown */
     u8 parseMPState; // size 0x001, offset 0x93d
     u8 wmParamOffset; // size 0x001, offset 0x93e
     u8 certWorkCounter; // size 0x001, offset 0x93f	// idk???
@@ -357,12 +357,12 @@ typedef struct /* possibly untagged, like kpad */
     ULONG certBuf0[16 + 2]; // size 0x048, offset 0x94c
     ULONG certBuf1[16 + 2]; // size 0x048, offset 0x994
     ULONG certBufBig[64 + 2]; // size 0x048, offset 0x994
-    int signed unk_0xae4; // size 0x004, offset 0xae4	/* unknown */
+    signed int unk_0xae4; // size 0x004, offset 0xae4	/* unknown */
     OSTime lastControllerDataUpdate; // size 0x008, offset 0xae8
     u16 filterDiff[WPAD_MAX_NZFILTERS]; // size 0x008, offset 0xaf0
     u16 filterSame[WPAD_MAX_NZFILTERS]; // size 0x008, offset 0xaf8
     OSTime lastReportSendTime; // size 0x008, offset 0xb00
-    char unsigned unk_0xb08; // size 0x001, offset 0xb08	/* unknown */
+    unsigned char unk_0xb08; // size 0x001, offset 0xb08	/* unknown */
     u8 calibrated; // size 0x001, offset 0xb09
     u16 recalibHoldMs; // size 0x002, offset 0xb0a
     byte_t encryptionKey[16]; // size 0x010, offset 0xb0c
@@ -373,7 +373,7 @@ typedef struct /* possibly untagged, like kpad */
     u32 wmReadAddress; // size 0x004, offset 0xb70
     int wmReadHadError; // size 0x004, offset 0xb74
     u16 wmReadLength; // size 0x002, offset 0xb78
-    char signed unk_0xb7a; // size 0x001, offset 0xb7a	/* unknown */
+    signed char unk_0xb7a; // size 0x001, offset 0xb7a	/* unknown */
     u8 radioSensitivity; // size 0x001, offset 0xb7b
     u16 copyOutCount; // size 0x002, offset 0xb7c
     u8 sleeping; // size 0x001, offset 0xb7e
@@ -404,7 +404,7 @@ typedef struct /* possibly untagged, like kpad */
     s8 extErr; // size 0x001, offset 0xbb9
     u8 extDataLength; // size 0x001, offset 0xbba
     u8 extDevType; // size 0x001, offset 0xbbb
-    char unsigned unk_0xbbc; // size 0x001, offset 0xbbc	/* unknown */ // related to
+    unsigned char unk_0xbbc; // size 0x001, offset 0xbbc	/* unknown */ // related to
                              // VSM
     byte_t __pad2[3]; /* unknown (can't be alignment) */
     byte_t extDataBuf[32]; // size 0x020, offset 0xbc0

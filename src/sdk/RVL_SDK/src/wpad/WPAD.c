@@ -113,11 +113,15 @@ static void __wpadSetScreenSaverFlag(BOOL disabled);
 static u8 __wpadGetDpdSensitivity(void);
 static u8 __wpadGetSensorBarPosition(void);
 static u32 __wpadGetMotorMode(void);
+#endif
 static u8 __wpadClampSpeakerVolume(u8 volume);
+#if 0
 static u8 __wpadGetSpeakerVolume(void);
+#endif
 static u16 __wpadGetBTEBufferStatus(WPADChannel chan);
 static u16 __wpadGetBTMBufferStatus(WPADChannel chan);
 
+#if 0
 static void __wpadCertFailed(WPADChannel chan);
 static void __wpadCertCalcMulX(WPADChannel chan);
 static void __wpadCertCalcModX(WPADChannel chan);
@@ -2240,7 +2244,6 @@ void WPADiCopyOut(WPADChannel chan) {
     OSRestoreInterrupts(intrStatus);
 }
 
-#if 0
 BOOL WPADIsSpeakerEnabled(WPADChannel chan) {
     BOOL enabled;
 
@@ -2470,6 +2473,7 @@ WPADResult WPADSendStreamData(WPADChannel chan, void *p_buf, u16 len) {
 
     return WPAD_ESUCCESS;
 }
+#if 0
 
 // WPADSetDpdSensitivity ([SGLEA4]/MAP/GormitiDebug.MAP:25355)
 extern void __deadstrip4(void) { (void)"Sensitivity must be from 1 to 5.\n"; }
@@ -3167,6 +3171,7 @@ BOOL WPADiSendEnableDPD(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallbac
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
+#endif
 
 BOOL WPADiSendEnableSpeaker(
     struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb
@@ -3182,7 +3187,6 @@ BOOL WPADiSendEnableSpeaker(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
-#endif
 
 // SendGetContinuousStatus?
 // this is just the request status report report; what is Cont
@@ -3254,7 +3258,6 @@ BOOL WPADiSendReadData(
     return success;
 }
 
-#if 0
 BOOL WPADiSendStreamData(struct WPADCmdQueue *cmdQueue, const void *p_buf, u16 len) {
     BOOL success;
     u8 packedLen = len << 3;
@@ -3262,16 +3265,14 @@ BOOL WPADiSendStreamData(struct WPADCmdQueue *cmdQueue, const void *p_buf, u16 l
     OSAssert_Line(5764, len > 0 && len <= 20);
 
     struct WPADCmd cmdBlk;
-    cmdBlk.reportID =
-RPTID_SEND_SPEAKER_DATA
-;
-cmdBlk.dataLength = sizeof cmdBlk.dataBuf;
-cmdBlk.dataBuf[RPT18_DATA_LENGTH] = packedLen;
-cmdBlk.cmdCB = NULL;
-memcpy(&cmdBlk.dataBuf[RPT18_DATA], p_buf, len);
+    cmdBlk.reportID = RPTID_SEND_SPEAKER_DATA;
+    cmdBlk.dataLength = sizeof cmdBlk.dataBuf;
+    cmdBlk.dataBuf[RPT18_DATA_LENGTH] = packedLen;
+    cmdBlk.cmdCB = NULL;
+    memcpy(&cmdBlk.dataBuf[RPT18_DATA], p_buf, len);
 
-success = __wpadPushCommand(cmdQueue, cmdBlk);
-return success;
+    success = __wpadPushCommand(cmdQueue, cmdBlk);
+    return success;
 }
 
 BOOL WPADiSendMuteSpeaker(struct WPADCmdQueue *cmdQueue, BOOL muted, WPADCallback *cb) {
@@ -3286,7 +3287,6 @@ BOOL WPADiSendMuteSpeaker(struct WPADCmdQueue *cmdQueue, BOOL muted, WPADCallbac
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
-#endif
 
 BOOL WPADiSendDPDCSB(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb) {
     BOOL success;
@@ -3303,7 +3303,6 @@ success = __wpadPushCommand(cmdQueue, cmdBlk);
 return success;
 }
 
-#if 0
 BOOL WPADiIsAvailableCmdQueue(struct WPADCmdQueue *cmdQueue, s8 num) {
     s8 queueSize = __wpadGetQueueSize(cmdQueue);
 
@@ -3312,7 +3311,6 @@ BOOL WPADiIsAvailableCmdQueue(struct WPADCmdQueue *cmdQueue, s8 num) {
     else
         return FALSE;
 }
-#endif
 
 static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue) {
     BOOL intrStatus = OSDisableInterrupts();
@@ -3449,6 +3447,7 @@ static u32 __wpadGetMotorMode(void) {
     // ?
     return !!(SCGetWpadMotorMode() == 1);
 }
+#endif
 
 static u8 __wpadClampSpeakerVolume(u8 volume) {
     u8 clampedVol = volume;
@@ -3462,11 +3461,13 @@ static u8 __wpadClampSpeakerVolume(u8 volume) {
     return clampedVol;
 }
 
+#if 0
 static u8 __wpadGetSpeakerVolume(void) {
     u8 volume = SCGetWpadSpeakerVolume();
     volume = __wpadClampSpeakerVolume(volume);
     return volume;
 }
+#endif
 
 static u16 __wpadGetBTEBufferStatus(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -3500,6 +3501,7 @@ static u16 __wpadGetBTMBufferStatus(WPADChannel chan) {
     return _WUDGetNotAckedSize(dev_handle);
 }
 
+#if 0
 void WPADRecalibrate(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

@@ -210,8 +210,8 @@ static u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
 #endif // !defined(NDEBUG)
 
 static u8 _wpadSleepTime;
-static u8 _wpadDpdSense;
 #endif
+/* TODO static */ extern u8 _wpadDpdSense;
 /* TODO static */ extern u8 _wpadSensorBarPos;
 /* TODO static */ extern BOOL _wpadRumbleFlag;
 /* TODO static */ extern u8 _wpadSpeakerVol;
@@ -2477,6 +2477,7 @@ WPADResult WPADSendStreamData(WPADChannel chan, void *p_buf, u16 len) {
 
 // WPADSetDpdSensitivity ([SGLEA4]/MAP/GormitiDebug.MAP:25355)
 extern void __deadstrip4(void) { (void)"Sensitivity must be from 1 to 5.\n"; }
+#endif
 
 u8 WPADGetDpdSensitivity(void) {
     BOOL intrStatus = OSDisableInterrupts();
@@ -2631,6 +2632,7 @@ end:
     return status;
 }
 
+#if 0
 WPADResult WPADControlBLC(WPADChannel chan, WPADBLCCommand command, WPADCallback *cb) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -3158,6 +3160,7 @@ BOOL WPADiSendSetReportType(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
+#endif
 
 BOOL WPADiSendEnableDPD(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb) {
     BOOL success;
@@ -3171,7 +3174,6 @@ BOOL WPADiSendEnableDPD(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallbac
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
-#endif
 
 BOOL WPADiSendEnableSpeaker(
     struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb

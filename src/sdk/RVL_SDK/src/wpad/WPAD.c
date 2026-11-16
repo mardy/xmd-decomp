@@ -210,8 +210,8 @@ static u8 _wpadDpdSense;
 #endif
 /* TODO static */ extern u8 _wpadSensorBarPos;
 /* TODO static */ extern BOOL _wpadRumbleFlag;
+/* TODO static */ extern u8 _wpadSpeakerVol;
 #if 0
-static u8 _wpadSpeakerVol;
 static u8 _wpadSCSetting;
 static u8 _wpadShutdownFlag;
 static s8 _wpadAfhChannel;
@@ -2041,7 +2041,6 @@ BOOL WPADIsMotorEnabled(void) {
     return enabled;
 }
 
-#if 0
 WPADResult WPADControlLed(WPADChannel chan, u8 ledFlags, WPADCallback *cb) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -2151,6 +2150,7 @@ void WPADSetAutoSamplingBuf(WPADChannel chan, void *buf, u32 length) {
     OSRestoreInterrupts(intrStatus);
 }
 
+#if 0
 void WPADiExcludeButton(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

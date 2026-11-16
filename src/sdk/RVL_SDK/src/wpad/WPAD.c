@@ -252,10 +252,6 @@ static u8 _wpadRegisterShutdownFunc;
  * functions
  */
 
-#endif
-inline BOOL WPADIsUsedCallbackByKPAD(void) { return _wpadUsedCallback; }
-#if 0
-
 static void *__wpadNoAlloc(size_t size __attribute__((unused))) { return NULL; }
 
 static int __wpadNoFree(void *ptr __attribute__((unused))) { return 0; }
@@ -3524,9 +3520,13 @@ void WPADRecalibrate(WPADChannel chan) {
 #if !defined(NDEBUG)
 BOOL WPADiIsDummyExtension(WPADChannel chan) { return _wpadDummyAttach[chan]; }
 #endif
+#endif
+
+BOOL WPADIsUsedCallbackByKPAD(void) { return _wpadUsedCallback; }
 
 void WPADSetCallbackByKPAD(BOOL isKPAD) { _wpadUsedCallback = isKPAD; }
 
+#if 0
 static void __wpadCertFailed(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

@@ -2150,7 +2150,6 @@ void WPADSetAutoSamplingBuf(WPADChannel chan, void *buf, u32 length) {
     OSRestoreInterrupts(intrStatus);
 }
 
-#if 0
 void WPADiExcludeButton(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -2241,6 +2240,7 @@ void WPADiCopyOut(WPADChannel chan) {
     OSRestoreInterrupts(intrStatus);
 }
 
+#if 0
 BOOL WPADIsSpeakerEnabled(WPADChannel chan) {
     BOOL enabled;
 

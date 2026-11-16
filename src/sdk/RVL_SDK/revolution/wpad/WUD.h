@@ -77,7 +77,7 @@ struct WUDDevInfo
 	UINT8					subclass;	// size 0x01, offset 0x57
 	UINT8					appID;		// size 0x01, offset 0x58
 	u8						at_0x59;	// size 0x01, offset 0x59
-	char signed				at_0x5a;	// size 0x01, offset 0x5a	/* unknown */
+	s8						at_0x5a;	// size 0x01, offset 0x5a	/* unknown */
 	u8						at_0x5b;	// size 0x01, offset 0x5b
 	u8						at_0x5c;	// size 0x01, offset 0x5c
 	byte_t					unk_0x5d[1]; // padding?

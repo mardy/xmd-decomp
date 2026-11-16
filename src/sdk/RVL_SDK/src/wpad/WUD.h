@@ -191,7 +191,7 @@ typedef struct /* possibly untagged, like kpad */
 
     s8 libStatus; // size 0x001, offset 0x708
 
-    char unsigned unk_0x709; // size 0x001, offset 0x709	/* unknown */
+    unsigned char unk_0x709; // size 0x001, offset 0x709	/* unknown */
     UINT8 pmID; // size 0x001, offset 0x70a
     s8 syncRssi; // size 0x001, offset 0x70b	// implied by usage and stripped symbols
                  // _WUD[GS]etSyncRssi

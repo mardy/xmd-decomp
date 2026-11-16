@@ -209,8 +209,8 @@ static u8 _wpadSleepTime;
 static u8 _wpadDpdSense;
 #endif
 /* TODO static */ extern u8 _wpadSensorBarPos;
+/* TODO static */ extern BOOL _wpadRumbleFlag;
 #if 0
-static BOOL _wpadRumbleFlag;
 static u8 _wpadSpeakerVol;
 static u8 _wpadSCSetting;
 static u8 _wpadShutdownFlag;
@@ -1985,6 +1985,7 @@ end:
 #if 0
 // WPADGetSyncType ([SGLEA4]/MAP/GormitiDebug.MAP:25337)
 extern void __deadstrip3(void) { (void)"Failed assertion type != NULL"; }
+#endif
 
 void WPADControlMotor(WPADChannel chan, WPADMotorCommand command) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -2040,6 +2041,7 @@ BOOL WPADIsMotorEnabled(void) {
     return enabled;
 }
 
+#if 0
 WPADResult WPADControlLed(WPADChannel chan, u8 ledFlags, WPADCallback *cb) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 

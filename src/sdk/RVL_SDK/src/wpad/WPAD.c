@@ -3071,7 +3071,6 @@ BOOL WPADiSendSetPort(struct WPADCmdQueue *cmdQueue, u8 port, WPADCallback *cb) 
     return success;
 }
 
-#if 0
 BOOL WPADiSendSetReportType(
     struct WPADCmdQueue *cmdQueue, s32 format, BOOL notContinuous, WPADCallback *cb
 ) {
@@ -3144,6 +3143,10 @@ BOOL WPADiSendSetReportType(
         cmdBlk.dataBuf[RPT12_DATA_REPORT_MODE] = RPTID_DATA_BTN_ACC_EXT16;
         break;
 
+    case WPAD_FMT_20:
+        cmdBlk.dataBuf[RPT12_DATA_REPORT_MODE] = RPTID_DATA_BTN_ACC_EXT16;
+        break;
+
     case WPAD_FMT_BALANCE_CHECKER:
         cmdBlk.dataBuf[RPT12_DATA_REPORT_MODE] = RPTID_DATA_BTN_EXT19;
         break;
@@ -3164,7 +3167,6 @@ BOOL WPADiSendSetReportType(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
-#endif
 
 BOOL WPADiSendEnableDPD(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb) {
     BOOL success;

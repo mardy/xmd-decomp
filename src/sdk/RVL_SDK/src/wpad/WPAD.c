@@ -80,7 +80,9 @@ static void __wpadReconnectStart(BOOL saveSimpleDevs);
 
 static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result);
 static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result);
-static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result);
+#endif
+/* TODO static */void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result);
+#if 0
 static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo);
 static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success);
 static void __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len);
@@ -95,14 +97,18 @@ static void __wpadInfoCallback(WPADChannel chan, WPADResult result);
 static void __wpadDpdCallback(WPADChannel chan, WPADResult result);
 
 static void __wpadMplsCallback(WPADChannel chan, WPADResult result);
+#endif
 
-static s8 __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue);
+static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue);
 
 static BOOL __wpadPushCommand(struct WPADCmdQueue *cmdQueue, struct WPADCmd cmdBlk);
 static BOOL __wpadGetCommand(struct WPADCmdQueue *cmdQueue, struct WPADCmd *cmdBlkOut);
 static BOOL __wpadPopCommand(struct WPADCmdQueue *cmdQueue);
+#if 0
 static BOOL __wpadSetSensorBarPower(BOOL enabled);
+#endif
 static void __wpadSetScreenSaverFlag(BOOL disabled);
+#if 0
 static u8 __wpadGetDpdSensitivity(void);
 static u8 __wpadGetSensorBarPosition(void);
 static u32 __wpadGetMotorMode(void);
@@ -182,6 +188,7 @@ wpad_cb_st *__rvl_p_wpadcb[WPAD_MAX_CONTROLLERS];
 
 /* TODO remove, temporary: */
 extern WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
+extern u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
 
 #if 0
 // .sdata
@@ -1479,6 +1486,7 @@ static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result) {
     );
     WPADiSendGetContStat(&p_wpd->stdCmdQueue, NULL, NULL);
 }
+#endif
 
 static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo) {
     BD_ADDR_PTR devAddr;
@@ -1517,7 +1525,7 @@ static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo) {
     return chan;
 }
 
-static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
+/* TODO static */void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
     UINT8 dev_handle = devInfo->devHandle;
 
     OSAssertMessage_Line(
@@ -1597,14 +1605,14 @@ static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
             WPADSetAutoSamplingBuf(chan, p_wpd->samplingBuf, p_wpd->samplingBufSize);
         }
 
+        BOOL handshakeFinished = p_wpd->handshakeFinished;
         __wpadClearControlBlock(chan);
         _wpadIsUsedChannel[chan] = FALSE;
 
-        if (p_wpd->connectCB)
+        if (handshakeFinished && p_wpd->connectCB)
             (*p_wpd->connectCB)(chan, WPAD_ENODEV);
     }
 }
-#endif
 
 //static void
 void
@@ -3187,6 +3195,7 @@ BOOL WPADiSendWriteData(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
+#endif
 
 BOOL WPADiSendReadData(
     struct WPADCmdQueue *cmdQueue, void *p_buf, u16 len, u32 address, WPADCallback *cb
@@ -3209,6 +3218,7 @@ BOOL WPADiSendReadData(
     return success;
 }
 
+#if 0
 BOOL WPADiSendStreamData(struct WPADCmdQueue *cmdQueue, const void *p_buf, u16 len) {
     BOOL success;
     u8 packedLen = len << 3;
@@ -3264,14 +3274,15 @@ BOOL WPADiIsAvailableCmdQueue(struct WPADCmdQueue *cmdQueue, s8 num) {
     else
         return FALSE;
 }
+#endif
 
-static s8 __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue) {
+static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue) {
     BOOL intrStatus = OSDisableInterrupts();
 
     s8 queueRemaining = cmdQueue->indexIn - cmdQueue->indexOut;
 
     if (queueRemaining < 0)
-        queueRemaining += cmdQueue->length;
+        queueRemaining = queueRemaining + cmdQueue->length;
 
     OSRestoreInterrupts(intrStatus);
 
@@ -3351,6 +3362,7 @@ static BOOL __wpadPopCommand(struct WPADCmdQueue *cmdQueue) {
     return TRUE;
 }
 
+#if 0
 static BOOL __wpadSetSensorBarPower(BOOL enabled) {
     u32 reg;
     BOOL intrStatus = OSDisableInterrupts();
@@ -3370,12 +3382,14 @@ static BOOL __wpadSetSensorBarPower(BOOL enabled) {
 
     return oldStatus;
 }
+#endif
 
 static void __wpadSetScreenSaverFlag(BOOL disabled) {
     if (disabled)
         __VIResetRFIdle();
 }
 
+#if 0
 static u8 __wpadGetDpdSensitivity(void) {
     u8 dpdSens = SCGetBtDpdSensibility();
 

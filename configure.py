@@ -244,7 +244,7 @@ cflags_rel = [
     "-sdata2 0",
 ]
 
-config.linker_version = "Wii/1.3"
+config.linker_version = "Wii/1.0"
 
 config.shift_jis = False
 config.progress_all = False

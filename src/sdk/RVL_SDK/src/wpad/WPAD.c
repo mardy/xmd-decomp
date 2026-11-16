@@ -3320,7 +3320,7 @@ static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue) {
     s8 queueRemaining = cmdQueue->indexIn - cmdQueue->indexOut;
 
     if (queueRemaining < 0)
-        queueRemaining = queueRemaining + cmdQueue->length;
+        queueRemaining += cmdQueue->length;
 
     OSRestoreInterrupts(intrStatus);
 

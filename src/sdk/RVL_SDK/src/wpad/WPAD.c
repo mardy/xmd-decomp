@@ -79,9 +79,9 @@ static void __wpadResetModule(BOOL saveSimpleDevs);
 static void __wpadReconnectStart(BOOL saveSimpleDevs);
 #endif
 
-/* TODO static */void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result);
-/* TODO static */void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result);
-/* TODO static */void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result);
+static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result);
+static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result);
+static void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result);
 static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result);
 #if 0
 static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo);
@@ -1419,6 +1419,7 @@ u8 WPADGetSensorBarPosition(void) {
 
     return sensorBarPos;
 }
+#endif
 
 static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1432,7 +1433,6 @@ static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result) {
         __wpadDisconnect(chan, 0);
     }
 }
-#endif
 
 static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

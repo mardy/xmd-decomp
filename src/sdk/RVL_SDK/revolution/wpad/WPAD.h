@@ -156,6 +156,7 @@ enum WPADDataFormat_et
 	WPAD_FMT_TAIKO					= 17,	/* name known from asserts */
 	WPAD_FMT_TURNTABLE				= 18,	/* name known from asserts */
 	WPAD_FMT_BULK					= 19,	/* name known from asserts */
+	WPAD_FMT_20						= 20,   /* unknown, added in 2010's SDK */
 };
 
 typedef s32 WPADDeviceMode;

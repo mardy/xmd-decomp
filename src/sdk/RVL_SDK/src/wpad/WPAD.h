@@ -406,7 +406,9 @@ typedef struct /* possibly untagged, like kpad */
     u8 extDevType; // size 0x001, offset 0xbbb
     unsigned char unk_0xbbc; // size 0x001, offset 0xbbc	/* unknown */ // related to
                              // VSM
-    byte_t __pad2[3]; /* unknown (can't be alignment) */
+    byte_t __pad2; /* unknown (can't be alignment) */
+    s8 mplsIdentificator; /* Byte at A600FA */
+    byte_t __pad3; /* unknown (can't be alignment) */
     byte_t extDataBuf[32]; // size 0x020, offset 0xbc0
 } wpad_cb_st; // size 0xbe0
 

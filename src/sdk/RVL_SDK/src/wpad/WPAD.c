@@ -1385,6 +1385,7 @@ u8 WPADGetRadioSensitivity(WPADChannel chan) {
 
     return radioSensitivity;
 }
+#endif
 
 void WPADGetAddress(WPADChannel chan, BD_ADDR_PTR addr) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1405,6 +1406,7 @@ void WPADGetAddress(WPADChannel chan, BD_ADDR_PTR addr) {
         memset(addr, 0, BD_ADDR_LEN);
 }
 
+#if 0
 // WPADGetCalibratedDPDObject ([SGLEA4]/MAP/GormitiDebug.MAP:25309)
 extern void __deadstrip1(void) { (void)"Failed assertion src != NULL && dst != NULL"; }
 
@@ -1440,6 +1442,24 @@ static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result) {
     }
 }
 #endif
+
+static void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result) {
+    wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
+
+    /* The Wii Motion Plus is first identified by the 6 bytes
+     * 00 00 A6 20 00 05 at register address 0x(4)a600fa
+     * (says Wiibrew)
+     */
+    if (result == WPAD_ESUCCESS && p_wpd->wmReadDataBuf[0x0f] == 0x05) {
+        p_wpd->mplsIdentificator = p_wpd->wmReadDataBuf[0x0a];
+    } else if (result == WPAD_ERR_3) {
+        p_wpd->mplsIdentificator = 0;
+    }
+    if (p_wpd->mplsIdentificator != 0 && p_wpd->mplsIdentificator != 0x01) {
+        WPADiClearQueue(&p_wpd->stdCmdQueue);
+        __wpadDisconnect(chan, 0);
+    }
+}
 
 static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

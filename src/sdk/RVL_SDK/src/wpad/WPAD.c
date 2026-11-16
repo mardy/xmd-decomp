@@ -2723,6 +2723,7 @@ extern void __deadstrip5(void)
 	(void)"Failed assertion addr >= WPAD_VSMCLB_ADDR1 && addr + (len - 1) < WPAD_VSMCLB_ADDR1 + WPAD_VSMCLB_LEN";
 }
 // clang-format on
+#endif
 
 u8 WPADiGetMplsStatus(WPADChannel chan) {
     u8 status = 0;
@@ -2742,10 +2743,12 @@ u8 WPADiGetMplsStatus(WPADChannel chan) {
     return status;
 }
 
+#if 0
 // WPADGetMplsStatus ([SGLEA4]/MAP/GormitiDebug.MAP:25381)
 extern void __deadstrip6(void) { (void)"WPADGetMplsStatus is obsolete.\n"; }
+#endif
 
-static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
+/* TODO static*/ void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
 #define CALC_STATUS(x) (!(x) ? WPAD_CECOMM : WPAD_CESUCCESS)
 
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -3047,6 +3050,7 @@ void WPADiGetMplsCalibration(
     OSRestoreInterrupts(intrStatus);
 }
 
+#if 0
 // WPADGetMplsCalibration ([SGLEA4]/MAP/GormitiDebug.MAP:25386)
 extern void __deadstrip8(void) { (void)"WPADGetMplsCalibration is obsolete.\n"; }
 

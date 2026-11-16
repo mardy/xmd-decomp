@@ -1359,12 +1359,14 @@ static void __wpadReconnectStart(BOOL saveSimpleDevs) {
 
     OSRestoreInterrupts(intrStatus);
 }
+#endif
 
 BOOL WPADStartFastSimpleSync(void) { return WUDStartFastSyncSimple(); }
 
 BOOL WPADStopSimpleSync(void) { return WUDStopSyncSimple(); }
 
-BOOL WPADCancelSyncDevice(void) { return WUDCancelSyncDevice(); }
+/* TODO removed or placed elsewhere */
+//BOOL WPADCancelSyncDevice(void) { return WUDCancelSyncDevice(); }
 
 WPADSimpleSyncCallback *WPADSetSimpleSyncCallback(WPADSimpleSyncCallback *cb) {
     return WUDSetSyncSimpleCallback(cb);
@@ -1387,7 +1389,6 @@ u8 WPADGetRadioSensitivity(WPADChannel chan) {
 
     return radioSensitivity;
 }
-#endif
 
 void WPADGetAddress(WPADChannel chan, BD_ADDR_PTR addr) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

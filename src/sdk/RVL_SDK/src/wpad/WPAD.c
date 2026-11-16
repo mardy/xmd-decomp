@@ -1432,6 +1432,7 @@ static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result) {
         __wpadDisconnect(chan, 0);
     }
 }
+#endif
 
 static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1441,7 +1442,6 @@ static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result) {
         __wpadDisconnect(chan, 0);
     }
 }
-#endif
 
 static void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

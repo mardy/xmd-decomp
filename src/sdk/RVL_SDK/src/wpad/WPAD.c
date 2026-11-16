@@ -1920,8 +1920,7 @@ WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     return status;
 }
 
-#if 0
-static void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
+/* TODO static */ void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
     if (p_wpd->getInfoCB)
@@ -1931,6 +1930,7 @@ static void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
     p_wpd->getInfoBusy = FALSE;
 }
 
+#if 0
 WPADResult WPADGetInfoAsync(WPADChannel chan, WPADInfo *info, WPADCallback *cb) {
     BOOL handshakeFinished;
     WPADResult status;

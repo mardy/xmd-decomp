@@ -207,7 +207,9 @@ static u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
 
 static u8 _wpadSleepTime;
 static u8 _wpadDpdSense;
-static u8 _wpadSensorBarPos;
+#endif
+/* TODO static */ extern u8 _wpadSensorBarPos;
+#if 0
 static BOOL _wpadRumbleFlag;
 static u8 _wpadSpeakerVol;
 static u8 _wpadSCSetting;
@@ -1409,6 +1411,7 @@ void WPADGetAddress(WPADChannel chan, BD_ADDR_PTR addr) {
 #if 0
 // WPADGetCalibratedDPDObject ([SGLEA4]/MAP/GormitiDebug.MAP:25309)
 extern void __deadstrip1(void) { (void)"Failed assertion src != NULL && dst != NULL"; }
+#endif
 
 u8 WPADGetSensorBarPosition(void) {
     BOOL intrStatus = OSDisableInterrupts();
@@ -1419,7 +1422,6 @@ u8 WPADGetSensorBarPosition(void) {
 
     return sensorBarPos;
 }
-#endif
 
 static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

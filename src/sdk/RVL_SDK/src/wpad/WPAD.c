@@ -1930,7 +1930,6 @@ WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     p_wpd->getInfoBusy = FALSE;
 }
 
-#if 0
 WPADResult WPADGetInfoAsync(WPADChannel chan, WPADInfo *info, WPADCallback *cb) {
     BOOL handshakeFinished;
     WPADResult status;
@@ -1983,6 +1982,7 @@ end:
     return status;
 }
 
+#if 0
 // WPADGetSyncType ([SGLEA4]/MAP/GormitiDebug.MAP:25337)
 extern void __deadstrip3(void) { (void)"Failed assertion type != NULL"; }
 

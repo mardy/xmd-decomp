@@ -77,11 +77,12 @@ static void __wpadShutdown(BOOL saveSimpleDevs);
 static void __wpadCleanup(void);
 static void __wpadResetModule(BOOL saveSimpleDevs);
 static void __wpadReconnectStart(BOOL saveSimpleDevs);
-
-static void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result);
-static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result);
 #endif
-/* TODO static */void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result);
+
+/* TODO static */void __wpadSetupConnectionCallback(WPADChannel chan, WPADResult result);
+/* TODO static */void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result);
+/* TODO static */void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result);
+static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result);
 #if 0
 static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo);
 static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success);
@@ -1438,6 +1439,7 @@ static void __wpadAbortConnectionCallback(WPADChannel chan, WPADResult result) {
         __wpadDisconnect(chan, 0);
     }
 }
+#endif
 
 static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -1477,6 +1479,14 @@ static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result) {
         WM_ADDR_MEM_GAME_INFO_1,
         &__wpadAbortConnectionCallback
     );
+    WPADiSendWriteDataCmd(&p_wpd->stdCmdQueue, 0xaa, WM_REG_EXTENSION_F0, NULL);
+    WPADiSendReadData(
+        &p_wpd->stdCmdQueue,
+        p_wpd->wmReadDataBuf,
+        16,
+        WM_REG_MPLS_F0,
+        &__wpadCheckIntegrationCallback
+    );
     WPADiSendReadData(
         &p_wpd->stdCmdQueue,
         p_wpd->wmReadDataBuf,
@@ -1486,7 +1496,6 @@ static void __wpadInitConnectionCallback(WPADChannel chan, WPADResult result) {
     );
     WPADiSendGetContStat(&p_wpd->stdCmdQueue, NULL, NULL);
 }
-#endif
 
 static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo) {
     BD_ADDR_PTR devAddr;
@@ -3012,6 +3021,7 @@ extern void __deadstrip8(void) { (void)"WPADGetMplsCalibration is obsolete.\n"; 
 
 // WPADSetMplsCalibration ([SGLEA4]/MAP/GormitiDebug.MAP:25387)
 extern void __deadstrip9(void) { (void)"WPADSetMplsCalibration is obsolete.\n"; }
+#endif
 
 BOOL WPADiSendSetPort(struct WPADCmdQueue *cmdQueue, u8 port, WPADCallback *cb) {
     BOOL success;
@@ -3026,6 +3036,7 @@ BOOL WPADiSendSetPort(struct WPADCmdQueue *cmdQueue, u8 port, WPADCallback *cb) 
     return success;
 }
 
+#if 0
 BOOL WPADiSendSetReportType(
     struct WPADCmdQueue *cmdQueue, s32 format, BOOL notContinuous, WPADCallback *cb
 ) {
@@ -3146,6 +3157,7 @@ BOOL WPADiSendEnableSpeaker(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
+#endif
 
 // SendGetContinuousStatus?
 // this is just the request status report report; what is Cont
@@ -3195,7 +3207,6 @@ BOOL WPADiSendWriteData(
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
-#endif
 
 BOOL WPADiSendReadData(
     struct WPADCmdQueue *cmdQueue, void *p_buf, u16 len, u32 address, WPADCallback *cb
@@ -3250,6 +3261,7 @@ BOOL WPADiSendMuteSpeaker(struct WPADCmdQueue *cmdQueue, BOOL muted, WPADCallbac
     success = __wpadPushCommand(cmdQueue, cmdBlk);
     return success;
 }
+#endif
 
 BOOL WPADiSendDPDCSB(struct WPADCmdQueue *cmdQueue, BOOL enabled, WPADCallback *cb) {
     BOOL success;
@@ -3266,6 +3278,7 @@ success = __wpadPushCommand(cmdQueue, cmdBlk);
 return success;
 }
 
+#if 0
 BOOL WPADiIsAvailableCmdQueue(struct WPADCmdQueue *cmdQueue, s8 num) {
     s8 queueSize = __wpadGetQueueSize(cmdQueue);
 

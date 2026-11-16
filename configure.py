@@ -285,6 +285,7 @@ cflags_sdk = [
     *cflags_runtime,
     "-lang=c99",
     "-func_align 16",
+    "-use_lmw_stmw off",
     "-ipa file",
     "-i src/sdk/RVL_SDK/revolution",
     "-i src/sdk/PowerPC_EABI_Support/MSL",

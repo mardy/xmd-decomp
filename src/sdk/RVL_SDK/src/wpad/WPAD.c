@@ -28,21 +28,15 @@
 #include <revolution/sc/scsystem.h>
 #include <revolution/vi/vi.h>
 
-#if 0
 /*******************************************************************************
  * macros
  */
 
-#if defined(NDEBUG)
 #define RVL_SDK_WPAD_VERSION_STRING                                                      \
-    "<< RVL_SDK - WPAD \trelease build: Dec 11 2009 15:59:48 (" STR(__CWCC__             \
+    "<< RVL_SDK - WPAD \trelease build: Aug 23 2010 19:49:06 (" STR(__CWCC__             \
     ) "_" STR(__CWBUILD__) ") >>"
-#else
-#define RVL_SDK_WPAD_VERSION_STRING                                                      \
-    "<< RVL_SDK - WPAD \tdebug build: Dec 11 2009 15:55:10 (" STR(__CWCC__               \
-    ) "_" STR(__CWBUILD__) ") >>"
-#endif
 
+#if 0
 /*******************************************************************************
  * local function declarations
  */
@@ -69,7 +63,9 @@ static void __wpadCalcSystemSettings(void);
 static void __wpadCalcAfh(void);
 static BOOL __wpadCalcReconnectWait(void);
 static void __wpadManageHandler(OSAlarm *alarm, OSContext *context);
-static void __wpadManageHandler0(OSAlarm *alarm, OSContext *context);
+#endif
+/* TODO static */void __wpadManageHandler0(OSAlarm *alarm, OSContext *context);
+#if 0
 static void __wpadClearControlBlock(WPADChannel chan);
 static void __wpadInitSub(void);
 
@@ -105,19 +101,13 @@ static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue);
 static BOOL __wpadPushCommand(struct WPADCmdQueue *cmdQueue, struct WPADCmd cmdBlk);
 static BOOL __wpadGetCommand(struct WPADCmdQueue *cmdQueue, struct WPADCmd *cmdBlkOut);
 static BOOL __wpadPopCommand(struct WPADCmdQueue *cmdQueue);
-#if 0
 static BOOL __wpadSetSensorBarPower(BOOL enabled);
-#endif
 static void __wpadSetScreenSaverFlag(BOOL disabled);
-#if 0
 static u8 __wpadGetDpdSensitivity(void);
 static u8 __wpadGetSensorBarPosition(void);
 static u32 __wpadGetMotorMode(void);
-#endif
 static u8 __wpadClampSpeakerVolume(u8 volume);
-#if 0
 static u8 __wpadGetSpeakerVolume(void);
-#endif
 static u16 __wpadGetBTEBufferStatus(WPADChannel chan);
 static u16 __wpadGetBTMBufferStatus(WPADChannel chan);
 
@@ -178,53 +168,53 @@ static const ULONG certv[] =
 };
 // clang-format on
 
-#if 0
 // .data, .sdata
-const char *__WPADVersion = RVL_SDK_WPAD_VERSION_STRING;
-static OSShutdownFunctionInfo ShutdownFunctionInfo;
+/* TODO noextern */ extern const char *__WPADVersion/* = RVL_SDK_WPAD_VERSION_STRING*/;
+/* TODO static */ extern OSShutdownFunctionInfo ShutdownFunctionInfo;
 
 // .bss
-static OSAlarm _wpadManageAlarm;
-wpad_cb_st __rvl_wpadcb[WPAD_MAX_CONTROLLERS] __attribute__((aligned(0x20)));
-static WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
-static byte_t __wpadManageHandlerStack[0x1000] __attribute__((aligned(0x20)));
-#endif
+/* TODO static */ OSAlarm _wpadManageAlarm;
 wpad_cb_st *__rvl_p_wpadcb[WPAD_MAX_CONTROLLERS];
+/* TODO noextern */ wpad_cb_st __rvl_wpadcb[WPAD_MAX_CONTROLLERS] __attribute__((aligned(0x20)));
+static WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
+/* TODO static */ byte_t __wpadManageHandlerStack[0x1000] __attribute__((aligned(0x20)));
 
 /* TODO remove, temporary: */
-extern WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
 extern u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
 
-#if 0
+void force_bss_order()
+{
+    OSAlarm *alarm = &_wpadManageAlarm;
+    wpad_cb_st *p_pad = __rvl_p_wpadcb[0];
+    byte_t *b = __wpadManageHandlerStack;
+    WUDDevHandle *handle = _wpadHandle2PortTable;
+    wpad_cb_st *pp_pad = __rvl_wpadcb;
+}
+
 // .sdata
-static s32 _wpadOnReconnect = -1;
-static u16 _wpad_diff_count_threshold[WPAD_MAX_NZFILTERS] = { 6, 4, 6, 12 };
-static u16 _wpad_hyst_count_threshold[WPAD_MAX_NZFILTERS] = { 30, 30, 30, 30 };
+/* TODO static */ extern s32 _wpadOnReconnect/* = -1*/;
+/* TODO static */ extern u16 _wpad_diff_count_threshold[WPAD_MAX_NZFILTERS]/* = { 6, 4, 6, 12 }*/;
+/* TODO static */ extern u16 _wpad_hyst_count_threshold[WPAD_MAX_NZFILTERS]/* = { 30, 30, 30, 30 }*/;
 
 // .sbss
-static OSAppType _wpadGameType;
-static const char *_wpadGameCode;
+/* TODO static */ extern OSAppType _wpadGameType;
+/* TODO static */ extern const char *_wpadGameCode;
 
 #if !defined(NDEBUG)
-static u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
+/* TODO static */ extern u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
 #endif // !defined(NDEBUG)
 
-static u8 _wpadSleepTime;
-#endif
+/* TODO static */ extern u8 _wpadSleepTime;
 /* TODO static */ extern u8 _wpadDpdSense;
 /* TODO static */ extern u8 _wpadSensorBarPos;
 /* TODO static */ extern BOOL _wpadRumbleFlag;
 /* TODO static */ extern u8 _wpadSpeakerVol;
-#if 0
-static u8 _wpadSCSetting;
-static u8 _wpadShutdownFlag;
-static s8 _wpadAfhChannel;
-static u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
-static BOOL _wpadInitialized;
-#endif
-//static BOOL _wpadUsedCallback;
-BOOL _wpadUsedCallback;
-#if 0
+/* TODO static */ extern u8 _wpadSCSetting;
+/* TODO static */ extern u8 _wpadShutdownFlag;
+/* TODO static */ extern s8 _wpadAfhChannel;
+/* TODO static */ extern u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
+/* TODO static */ extern BOOL _wpadInitialized;
+/* TODO static */BOOL _wpadUsedCallback;
 __attribute__((weak)) BOOL _enabledBLK;
 __attribute__((weak)) BOOL _enabledTBL;
 __attribute__((weak)) BOOL _enabledTKO;
@@ -232,6 +222,7 @@ __attribute__((weak)) BOOL _enabledDRM;
 __attribute__((weak)) BOOL _enabledGTR;
 __attribute__((weak)) BOOL _enabledTRN;
 __attribute__((weak)) BOOL _enabledVSM;
+__attribute__((weak)) WPADInitFunc *_wpadDRWInit;
 __attribute__((weak)) WPADInitFunc *_wpadBLKInit;
 __attribute__((weak)) WPADInitFunc *_wpadTBLInit;
 __attribute__((weak)) WPADInitFunc *_wpadTKOInit;
@@ -239,15 +230,16 @@ __attribute__((weak)) WPADInitFunc *_wpadDRMInit;
 __attribute__((weak)) WPADInitFunc *_wpadGTRInit;
 __attribute__((weak)) WPADInitFunc *_wpadTRNInit;
 __attribute__((weak)) WPADInitFunc *_wpadVSMInit;
-static s32 _wpadReconnectWait;
-static BOOL _wpadStartup;
-static u8 _wpadRumbleCnt[WPAD_MAX_CONTROLLERS];
-static u8 _wpadExtCnt[WPAD_MAX_CONTROLLERS];
-static u16 _wpadAfhCnt;
-static u8 _wpadCheckCnt;
-static u16 _wpadSenseCnt;
-static u8 _wpadRegisterShutdownFunc;
+/* TODO static */ extern s32 _wpadReconnectWait;
+/* TODO static */ extern BOOL _wpadStartup;
+/* TODO static */ extern u8 _wpadRumbleCnt[WPAD_MAX_CONTROLLERS];
+/* TODO static */ extern u8 _wpadExtCnt[WPAD_MAX_CONTROLLERS];
+/* TODO static */ extern u16 _wpadAfhCnt;
+/* TODO static */ extern u8 _wpadCheckCnt;
+/* TODO static */ extern u16 _wpadSenseCnt;
+/* TODO static */ extern u8 _wpadRegisterShutdownFunc;
 
+#if 0
 /*******************************************************************************
  * functions
  */
@@ -1233,6 +1225,7 @@ static void __wpadClearControlBlock(WPADChannel chan) {
     _wpadDummyAttach[chan] = FALSE;
 #endif // !defined(NDEBUG)
 }
+#endif
 
 // TODO on release
 static void __wpadInitSub(void) {
@@ -1244,17 +1237,18 @@ static void __wpadInitSub(void) {
         _wpadHandle2PortTable[i] = WUD_DEV_HANDLE_INVALID;
 
     for (chan = 0; chan < WPAD_MAX_CONTROLLERS; chan++) {
-        __rvl_p_wpadcb[chan] = &__rvl_wpadcb[chan];
-
+        wpad_cb_st *p_wpd = &__rvl_wpadcb[chan];
         _wpadIsUsedChannel[chan] = FALSE;
+        __rvl_p_wpadcb[chan] = p_wpd;
 
-        __rvl_p_wpadcb[chan]->connectCB = NULL;
+
+        p_wpd->connectCB = NULL;
         __wpadClearControlBlock(chan);
-        OSInitThreadQueue(&__rvl_wpadcb[chan].threadQueue);
-        __rvl_p_wpadcb[chan]->certMayVerifyByCalibBlock = FALSE;
+        OSInitThreadQueue(&p_wpd->threadQueue);
 
         _wpadExtCnt[chan] = 0;
         _wpadRumbleCnt[chan] = 0;
+        p_wpd->certMayVerifyByCalibBlock = FALSE;
     }
 
     _wpadSleepTime = 5;
@@ -1283,6 +1277,7 @@ static void __wpadInitSub(void) {
 	if (_wpadTKOInit) (*_wpadTKOInit)();
 	if (_wpadTBLInit) (*_wpadTBLInit)();
 	if (_wpadBLKInit) (*_wpadBLKInit)();
+	if (_wpadDRWInit) (*_wpadDRWInit)();
     // clang-format on
 
     OSCreateAlarm(&_wpadManageAlarm);
@@ -1308,6 +1303,7 @@ void WPADInit(void) {
     }
 }
 
+#if 0
 void WPADShutdown(void) { return; }
 
 static void __wpadShutdown(BOOL saveSimpleDevs) {
@@ -3402,7 +3398,6 @@ static BOOL __wpadPopCommand(struct WPADCmdQueue *cmdQueue) {
     return TRUE;
 }
 
-#if 0
 static BOOL __wpadSetSensorBarPower(BOOL enabled) {
     u32 reg;
     BOOL intrStatus = OSDisableInterrupts();
@@ -3416,20 +3411,16 @@ static BOOL __wpadSetSensorBarPower(BOOL enabled) {
         newStatus = reg & ~(1 << 8);
 
     ACRWriteReg(0xc0, newStatus);
-    BOOL oldStatus = reg & (1 << 8) ? 1 : 0;
 
     OSRestoreInterrupts(intrStatus);
-
-    return oldStatus;
+    return (reg & (1 << 8)) != 0;
 }
-#endif
 
 static void __wpadSetScreenSaverFlag(BOOL disabled) {
     if (disabled)
         __VIResetRFIdle();
 }
 
-#if 0
 static u8 __wpadGetDpdSensitivity(void) {
     u8 dpdSens = SCGetBtDpdSensibility();
 
@@ -3451,7 +3442,6 @@ static u32 __wpadGetMotorMode(void) {
     // ?
     return !!(SCGetWpadMotorMode() == 1);
 }
-#endif
 
 static u8 __wpadClampSpeakerVolume(u8 volume) {
     u8 clampedVol = volume;
@@ -3465,13 +3455,11 @@ static u8 __wpadClampSpeakerVolume(u8 volume) {
     return clampedVol;
 }
 
-#if 0
 static u8 __wpadGetSpeakerVolume(void) {
     u8 volume = SCGetWpadSpeakerVolume();
     volume = __wpadClampSpeakerVolume(volume);
     return volume;
 }
-#endif
 
 static u16 __wpadGetBTEBufferStatus(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];

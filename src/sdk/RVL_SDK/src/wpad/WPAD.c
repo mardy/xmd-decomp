@@ -121,7 +121,6 @@ static u8 __wpadGetSpeakerVolume(void);
 static u16 __wpadGetBTEBufferStatus(WPADChannel chan);
 static u16 __wpadGetBTMBufferStatus(WPADChannel chan);
 
-#if 0
 static void __wpadCertFailed(WPADChannel chan);
 static void __wpadCertCalcMulX(WPADChannel chan);
 static void __wpadCertCalcModX(WPADChannel chan);
@@ -137,7 +136,7 @@ static void __wpadCertGetParamX(WPADChannel chan);
 static void __wpadCertVerifyParamX(WPADChannel chan);
 static inline void __wpadCertGetParamY(WPADChannel chan);
 static void __wpadCertVerifyParamY(WPADChannel chan);
-static void __wpadCertWork(WPADChannel chan);
+/* TODO static */void __wpadCertWork(WPADChannel chan);
 
 /*******************************************************************************
  * variables
@@ -179,6 +178,7 @@ static const ULONG certv[] =
 };
 // clang-format on
 
+#if 0
 // .data, .sdata
 const char *__WPADVersion = RVL_SDK_WPAD_VERSION_STRING;
 static OSShutdownFunctionInfo ShutdownFunctionInfo;
@@ -3526,7 +3526,6 @@ BOOL WPADIsUsedCallbackByKPAD(void) { return _wpadUsedCallback; }
 
 void WPADSetCallbackByKPAD(BOOL isKPAD) { _wpadUsedCallback = isKPAD; }
 
-#if 0
 static void __wpadCertFailed(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
@@ -3924,7 +3923,7 @@ fail:
     __wpadCertFailed(chan);
 }
 
-static void __wpadCertWork(WPADChannel chan) {
+/* TODO static */void __wpadCertWork(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
     if (p_wpd->certValidityStatus != WPAD_CERT_UNCHECKED)
@@ -3995,4 +3994,3 @@ static void __wpadCertWork(WPADChannel chan) {
         __wpadCertFailed(chan);
     }
 }
-#endif

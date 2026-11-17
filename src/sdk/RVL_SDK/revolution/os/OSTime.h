@@ -23,6 +23,8 @@ typedef s64 OSTime;
 #define OSMicrosecondsToTicks(x) ((x) * (OS_TIME_SPEED / 125000) / 8)
 #define OSNanosecondsToTicks(x) ((x) * (OS_TIME_SPEED / 125000) / 8000)
 
+#define OSDiffTick(tick1, tick0) ((s32)(tick1) - (s32)(tick0))
+
 typedef struct OSCalendarTime {
     s32 sec;       // at 0x0
     s32 min;       // at 0x4
@@ -37,7 +39,7 @@ typedef struct OSCalendarTime {
 } OSCalendarTime;
 
 s64 OSGetTime(void);
-s32 OSGetTick(void);
+u32 OSGetTick(void);
 
 s64 __OSGetSystemTime(void);
 s64 __OSTimeToSystemTime(s64 time);

@@ -574,6 +574,23 @@ typedef struct WPADAccGravityUnit
 	s16	z;	// size 0x02, offset 0x04
 } WPADAccGravityUnit; // size 0x06
 
+typedef struct WPADFmt20tatus
+{
+	WPADButton	unk0;						// size 0x02, offset 0x00
+	s16			unk1;						// size 0x02, offset 0x02
+	s16			unk2;						// size 0x02, offset 0x04
+	s16			unk3;						// size 0x02, offset 0x06
+	DPDObject	unk4[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	u8			unk5;						// size 0x01, offset 0x28
+	s8			unk6;						// size 0x01, offset 0x29
+
+	u16			analog0;		// size 0x02, offset 0x2a
+	u16			analog1;		// size 0x02, offset 0x2c
+	u16			analog2;		// size 0x02, offset 0x2e
+	s8			unk7;	// size 0x01, offset 0x30
+	s8			unk8;	// size 0x01, offset 0x31
+} WPADFmt20tatus; // size 0x32
+
 /*******************************************************************************
  * functions
  */

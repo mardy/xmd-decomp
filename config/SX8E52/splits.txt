@@ -27,12 +27,13 @@ Runtime.PPCEABI.H/__init_cpp_exceptions.cpp:
 	.sdata      start:0x807CD1E0 end:0x807CD1E8
 
 sdk/RVL_SDK/src/wpad/WPAD-todo0.c:
-	.text       start:0x802C4124 end:0x802F0D60
+	.text       start:0x802C4124 end:0x802EEAC8
 
 sdk/RVL_SDK/src/wpad/WPAD.c:
-	.text       start:0x802F0D60 end:0x802F98A4
+	.text       start:0x802EEAD0 end:0x802F98A4
 	.rodata     start:0x806EDD30 end:0x806EDE00
-	.data       start:0x80788608 end:0x807887B0
+	.data       start:0x80788568 end:0x807887B0
+	.sdata      start:0x807CD3D0 end:0x807CD3D8
 	.sbss       start:0x807D1F38 end:0x807D1F3C
 	.sdata2     start:0x807D6330 end:0x807D6338
 	.bss        start:0x808126E0 end:0x808166C0

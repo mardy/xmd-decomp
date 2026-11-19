@@ -62,7 +62,7 @@ static void __wpadCalcSystemSettings(void);
 static void __wpadCalcAfh(void);
 static BOOL __wpadCalcReconnectWait(void);
 static void __wpadManageHandler(OSAlarm *alarm, OSContext *context);
-/* TODO static */void __wpadManageHandler0(OSAlarm *alarm, OSContext *context);
+static void __wpadManageHandler0(OSAlarm *alarm, OSContext *context);
 static void __wpadClearControlBlock(WPADChannel chan);
 static void __wpadInitSub(void);
 
@@ -81,14 +81,12 @@ static void __wpadReceiveCallback(UINT8 dev_handle, UINT8 *p_rpt, UINT16 len);
 static WPADResult __wpadGetConnectionStatus(WPADChannel chan);
 static void __wpadDisconnectCallback(WPADChannel chan, WPADResult result);
 static inline void __wpadDisconnect(WPADChannel chan, BOOL afkDisconnect);
-#if 0
 
 static void __wpadInfoCallback(WPADChannel chan, WPADResult result);
 
 static void __wpadDpdCallback(WPADChannel chan, WPADResult result);
 
 static void __wpadMplsCallback(WPADChannel chan, WPADResult result);
-#endif
 
 static int __wpadGetQueueSize(struct WPADCmdQueue *cmdQueue);
 
@@ -120,7 +118,7 @@ static void __wpadCertGetParamX(WPADChannel chan);
 static void __wpadCertVerifyParamX(WPADChannel chan);
 static inline void __wpadCertGetParamY(WPADChannel chan);
 static void __wpadCertVerifyParamY(WPADChannel chan);
-/* TODO static */void __wpadCertWork(WPADChannel chan);
+static void __wpadCertWork(WPADChannel chan);
 
 /*******************************************************************************
  * variables
@@ -194,7 +192,7 @@ static OSAppType _wpadGameType;
 static const char *_wpadGameCode;
 
 #if !defined(NDEBUG)
-/* TODO static */ extern u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
+static u8 _wpadDummyAttach[WPAD_MAX_CONTROLLERS];
 #endif // !defined(NDEBUG)
 
 static u8 _wpadSleepTime;
@@ -1755,7 +1753,7 @@ static WPADChannel __wpadRetrieveChannel(WUDDevInfo *devInfo) {
     return chan;
 }
 
-/* TODO static */void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
+static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
     UINT8 dev_handle = devInfo->devHandle;
 
     OSAssertMessage_Line(
@@ -2118,7 +2116,7 @@ WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt) {
     return status;
 }
 
-/* TODO static */ void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
+static void __wpadInfoCallback(WPADChannel chan, WPADResult result) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
     if (p_wpd->getInfoCB)
@@ -2942,7 +2940,7 @@ u8 WPADiGetMplsStatus(WPADChannel chan) {
 extern void __deadstrip6(void) { (void)"WPADGetMplsStatus is obsolete.\n"; }
 #endif
 
-/* TODO static*/ void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
+static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
 #define CALC_STATUS(x) (!(x) ? WPAD_CECOMM : WPAD_CESUCCESS)
 
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
@@ -4117,7 +4115,7 @@ fail:
     __wpadCertFailed(chan);
 }
 
-/* TODO static */void __wpadCertWork(WPADChannel chan) {
+static void __wpadCertWork(WPADChannel chan) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
 
     if (p_wpd->certValidityStatus != WPAD_CERT_UNCHECKED)

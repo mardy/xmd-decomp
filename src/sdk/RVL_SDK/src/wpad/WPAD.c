@@ -169,7 +169,9 @@ static OSShutdownFunctionInfo ShutdownFunctionInfo;
 // .bss
 OSAlarm _wpadManageAlarm;
 wpad_cb_st *__rvl_p_wpadcb[WPAD_MAX_CONTROLLERS];
+#pragma force_active on
 wpad_cb_st __rvl_wpadcb[WPAD_MAX_CONTROLLERS] __attribute__((aligned(0x20)));
+#pragma force_active off
 static WUDDevHandle _wpadHandle2PortTable[WUD_MAX_DEV_ENTRY];
 static byte_t __wpadManageHandlerStack[0x1000] __attribute__((aligned(0x20)));
 

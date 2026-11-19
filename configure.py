@@ -213,6 +213,7 @@ cflags_base = [
     f"-i build/{config.version}/include",
     f"-DBUILD_VERSION={version_num}",
     f"-DVERSION_{config.version}",
+    '-DDECOMP_MATCH=1',
 ]
 
 # Debug flags

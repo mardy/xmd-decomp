@@ -602,6 +602,7 @@ BOOL WPADIsEnabledDRM(void);
 BOOL WPADIsEnabledTKO(void);
 BOOL WPADIsEnabledTBL(void);
 BOOL WPADIsEnabledBLK(void);
+BOOL WPADIsEnabledDRW(void);
 
 // Likely overridden by a WBC-specific library
 __attribute__((weak)) WPADResult WBCSetupCalibration(void);

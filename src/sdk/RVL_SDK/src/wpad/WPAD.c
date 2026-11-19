@@ -206,6 +206,7 @@ static s8 _wpadAfhChannel;
 static u8 _wpadIsUsedChannel[WPAD_MAX_CONTROLLERS];
 static BOOL _wpadInitialized;
 static BOOL _wpadUsedCallback;
+__attribute__((weak)) BOOL _enabledDRW;
 __attribute__((weak)) BOOL _enabledBLK;
 __attribute__((weak)) BOOL _enabledTBL;
 __attribute__((weak)) BOOL _enabledTKO;
@@ -252,6 +253,8 @@ BOOL WPADIsEnabledTBL(void) { return _enabledTBL; }
 
 BOOL WPADIsEnabledBLK(void) { return _enabledBLK; }
 
+BOOL WPADIsEnabledDRW(void) { return _enabledDRW; }
+
 __attribute__((weak)) WPADResult WBCSetupCalibration(void) { return WPAD_ESUCCESS; }
 
 __attribute__((weak)) signed WBCGetCalibrationStatus(void) { return 0; }
@@ -283,6 +286,10 @@ __attribute__((weak)) WPADResult WBCGetTGCWeight(
     return WPAD_ENODEV;
 }
 
+#if DECOMP_MATCH
+extern WPADAllocFunc gdev_cc_close;
+#endif
+
 static BOOL OnShutdown(OSShutdownPass pass, OSShutdownEvent event) {
     WUDLibStatus wudLibStatus = WUDGetStatus();
 
@@ -302,7 +309,12 @@ static BOOL OnShutdown(OSShutdownPass pass, OSShutdownEvent event) {
     BOOL isCleanup;
     switch (event) {
     case OS_SHUTDOWN_EVENT_FATAL:
-        WPADRegisterAllocator(&__wpadNoAlloc, &__wpadNoFree);
+#if DECOMP_MATCH
+        WPADFreeFunc *wpadNoFree = (void*)0x801B2530;
+        WPADRegisterAllocator(gdev_cc_close, wpadNoFree);
+#else
+        WPADRegisterAllocator(gdev_cc_close, &__wpadNoFree);
+#endif
 
         // fallthrough
 
@@ -1229,6 +1241,194 @@ static void __wpadClearControlBlock(WPADChannel chan) {
 #endif // !defined(NDEBUG)
 }
 
+#if DECOMP_MATCH
+void _savegpr_24();
+void _restgpr_24();
+asm void __wpadInitSub(void) {
+/* 802F0D60 002AEFC0  94 21 FF D0 */	stwu r1, -0x30(r1)
+/* 802F0D64 002AEFC4  7C 08 02 A6 */	mflr r0
+/* 802F0D68 002AEFC8  90 01 00 34 */	stw r0, 0x34(r1)
+/* 802F0D6C 002AEFCC  39 61 00 30 */	addi r11, r1, 0x30
+/* 802F0D70 002AEFD0  4B FD 12 E5 */	bl _savegpr_24
+/* 802F0D74 002AEFD4  3F E0 80 81 */	lis r31, _wpadManageAlarm@ha
+/* 802F0D78 002AEFD8  3B FF 26 E0 */	addi r31, r31, _wpadManageAlarm@l
+/* 802F0D7C 002AEFDC  4B FA DC 55 */	bl OSDisableInterrupts
+/* 802F0D80 002AEFE0  3C 80 CD 00 */	lis r4, 0xcd00
+/* 802F0D84 002AEFE4  80 04 00 C0 */	lwz r0, 0xc0(r4)
+/* 802F0D88 002AEFE8  60 00 01 00 */	ori r0, r0, 0x100
+/* 802F0D8C 002AEFEC  90 04 00 C0 */	stw r0, 0xc0(r4)
+/* 802F0D90 002AEFF0  4B FA DC 81 */	bl OSRestoreInterrupts
+/* 802F0D94 002AEFF4  38 7F 10 40 */	addi r3, r31, 0x1040
+/* 802F0D98 002AEFF8  38 00 FF FF */	li r0, -0x1
+/* 802F0D9C 002AEFFC  98 03 00 00 */	stb r0, 0x0(r3)
+/* 802F0DA0 002AF000  3B BF 10 60 */	addi r29, r31, 0x1060
+/* 802F0DA4 002AF004  3B 9F 00 30 */	addi r28, r31, 0x30
+/* 802F0DA8 002AF008  3B 00 00 00 */	li r24, 0x0
+/* 802F0DAC 002AF00C  98 03 00 01 */	stb r0, 0x1(r3)
+/* 802F0DB0 002AF010  3B 6D E4 C0 */	la r27, _wpadIsUsedChannel
+/* 802F0DB4 002AF014  3B 4D E4 68 */	la r26, _wpadExtCnt
+/* 802F0DB8 002AF018  3B 2D E4 6C */	la r25, _wpadRumbleCnt
+/* 802F0DBC 002AF01C  98 03 00 02 */	stb r0, 0x2(r3)
+/* 802F0DC0 002AF020  3B C0 00 00 */	li r30, 0x0
+/* 802F0DC4 002AF024  98 03 00 03 */	stb r0, 0x3(r3)
+/* 802F0DC8 002AF028  98 03 00 04 */	stb r0, 0x4(r3)
+/* 802F0DCC 002AF02C  98 03 00 05 */	stb r0, 0x5(r3)
+/* 802F0DD0 002AF030  98 03 00 06 */	stb r0, 0x6(r3)
+/* 802F0DD4 002AF034  98 03 00 07 */	stb r0, 0x7(r3)
+/* 802F0DD8 002AF038  98 03 00 08 */	stb r0, 0x8(r3)
+/* 802F0DDC 002AF03C  98 03 00 09 */	stb r0, 0x9(r3)
+/* 802F0DE0 002AF040  98 03 00 0A */	stb r0, 0xa(r3)
+/* 802F0DE4 002AF044  98 03 00 0B */	stb r0, 0xb(r3)
+/* 802F0DE8 002AF048  98 03 00 0C */	stb r0, 0xc(r3)
+/* 802F0DEC 002AF04C  98 03 00 0D */	stb r0, 0xd(r3)
+/* 802F0DF0 002AF050  98 03 00 0E */	stb r0, 0xe(r3)
+/* 802F0DF4 002AF054  98 03 00 0F */	stb r0, 0xf(r3)
+L_802F0DF8:
+/* 802F0DF8 002AF058  93 BC 00 00 */	stw r29, 0x0(r28)
+/* 802F0DFC 002AF05C  7F 03 C3 78 */	mr r3, r24
+/* 802F0E00 002AF060  9B DB 00 00 */	stb r30, 0x0(r27)
+/* 802F0E04 002AF064  93 DD 08 E8 */	stw r30, 0x8e8(r29)
+/* 802F0E08 002AF068  4B FF FC 19 */	bl __wpadClearControlBlock
+/* 802F0E0C 002AF06C  38 7D 09 28 */	addi r3, r29, 0x928
+/* 802F0E10 002AF070  4B F4 18 61 */	bl OSInitThreadQueue
+/* 802F0E14 002AF074  80 7C 00 00 */	lwz r3, 0x0(r28)
+/* 802F0E18 002AF078  3B 18 00 01 */	addi r24, r24, 0x1
+/* 802F0E1C 002AF07C  2C 18 00 04 */	cmpwi r24, 0x4
+/* 802F0E20 002AF080  3B BD 0B E0 */	addi r29, r29, 0xbe0
+/* 802F0E24 002AF084  9B C3 0B AE */	stb r30, 0xbae(r3)
+/* 802F0E28 002AF088  3B 9C 00 04 */	addi r28, r28, 0x4
+/* 802F0E2C 002AF08C  3B 7B 00 01 */	addi r27, r27, 0x1
+/* 802F0E30 002AF090  9B DA 00 00 */	stb r30, 0x0(r26)
+/* 802F0E34 002AF094  3B 5A 00 01 */	addi r26, r26, 0x1
+/* 802F0E38 002AF098  9B D9 00 00 */	stb r30, 0x0(r25)
+/* 802F0E3C 002AF09C  3B 39 00 01 */	addi r25, r25, 0x1
+/* 802F0E40 002AF0A0  41 80 FF B8 */	blt L_802F0DF8
+/* 802F0E44 002AF0A4  38 00 00 05 */	li r0, 0x5
+/* 802F0E48 002AF0A8  98 0D E4 CE */	stb r0, _wpadSleepTime
+/* 802F0E4C 002AF0AC  4B FA 85 05 */	bl OSGetAppGamename
+/* 802F0E50 002AF0B0  90 6D E4 D0 */	stw r3, _wpadGameCode
+/* 802F0E54 002AF0B4  4B FA 85 8D */	bl OSGetAppType
+/* 802F0E58 002AF0B8  98 6D E4 D4 */	stb r3, _wpadGameType
+/* 802F0E5C 002AF0BC  4B FF CD F5 */	bl SCGetBtDpdSensibility
+/* 802F0E60 002AF0C0  54 60 06 3E */	clrlwi r0, r3, 24
+/* 802F0E64 002AF0C4  28 00 00 01 */	cmplwi r0, 0x1
+/* 802F0E68 002AF0C8  40 80 00 08 */	bge L_802F0E70
+/* 802F0E6C 002AF0CC  38 00 00 01 */	li r0, 0x1
+L_802F0E70:
+/* 802F0E70 002AF0D0  28 00 00 05 */	cmplwi r0, 0x5
+/* 802F0E74 002AF0D4  40 81 00 08 */	ble L_802F0E7C
+/* 802F0E78 002AF0D8  38 00 00 05 */	li r0, 0x5
+L_802F0E7C:
+/* 802F0E7C 002AF0DC  98 0D E4 CD */	stb r0, _wpadDpdSense
+/* 802F0E80 002AF0E0  4B FF CE B1 */	bl SCGetWpadSensorBarPosition
+/* 802F0E84 002AF0E4  54 63 06 3E */	clrlwi r3, r3, 24
+/* 802F0E88 002AF0E8  38 03 FF FF */	subi r0, r3, 0x1
+/* 802F0E8C 002AF0EC  7C 00 00 34 */	cntlzw r0, r0
+/* 802F0E90 002AF0F0  54 00 DE 3E */	extrwi r0, r0, 8, 19
+/* 802F0E94 002AF0F4  98 0D E4 CC */	stb r0, _wpadSensorBarPos
+/* 802F0E98 002AF0F8  4B FF CE 29 */	bl SCGetWpadMotorMode
+/* 802F0E9C 002AF0FC  54 63 06 3E */	clrlwi r3, r3, 24
+/* 802F0EA0 002AF100  38 03 FF FF */	subi r0, r3, 0x1
+/* 802F0EA4 002AF104  7C 00 00 34 */	cntlzw r0, r0
+/* 802F0EA8 002AF108  54 00 D9 7E */	srwi r0, r0, 5
+/* 802F0EAC 002AF10C  90 0D E4 C8 */	stw r0, _wpadRumbleFlag
+/* 802F0EB0 002AF110  4B FF CE E1 */	bl SCGetWpadSpeakerVolume
+/* 802F0EB4 002AF114  54 60 06 3F */	clrlwi. r0, r3, 24
+/* 802F0EB8 002AF118  7C 66 1B 78 */	mr r6, r3
+/* 802F0EBC 002AF11C  40 82 00 08 */	bne L_802F0EC4
+/* 802F0EC0 002AF120  38 C0 00 00 */	li r6, 0x0
+L_802F0EC4:
+/* 802F0EC4 002AF124  54 60 06 3E */	clrlwi r0, r3, 24
+/* 802F0EC8 002AF128  28 00 00 7F */	cmplwi r0, 0x7f
+/* 802F0ECC 002AF12C  41 80 00 08 */	blt L_802F0ED4
+/* 802F0ED0 002AF130  38 C0 00 7F */	li r6, 0x7f
+L_802F0ED4:
+/* 802F0ED4 002AF134  38 A0 00 00 */	li r5, 0x0
+/* 802F0ED8 002AF138  38 80 00 01 */	li r4, 0x1
+/* 802F0EDC 002AF13C  38 00 FF FF */	li r0, -0x1
+/* 802F0EE0 002AF140  98 CD E4 C7 */	stb r6, _wpadSpeakerVol
+/* 802F0EE4 002AF144  80 6D 99 50 */	lwz r3, __WPADVersion
+/* 802F0EE8 002AF148  B0 AD E4 62 */	sth r5, _wpadSenseCnt
+/* 802F0EEC 002AF14C  98 AD E4 64 */	stb r5, _wpadCheckCnt
+/* 802F0EF0 002AF150  B0 AD E4 66 */	sth r5, _wpadAfhCnt
+/* 802F0EF4 002AF154  98 AD E4 C5 */	stb r5, _wpadShutdownFlag
+/* 802F0EF8 002AF158  98 8D E4 C6 */	stb r4, _wpadSCSetting
+/* 802F0EFC 002AF15C  98 0D E4 C4 */	stb r0, _wpadAfhChannel
+/* 802F0F00 002AF160  90 AD E4 B8 */	stw r5, _wpadUsedCallback
+/* 802F0F04 002AF164  4B FA 84 3D */	bl OSRegisterVersion
+/* 802F0F08 002AF168  81 8D E4 78 */	lwz r12, _wpadVSMInit
+/* 802F0F0C 002AF16C  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F10 002AF170  41 82 00 0C */	beq L_802F0F1C
+/* 802F0F14 002AF174  7D 89 03 A6 */	mtctr r12
+/* 802F0F18 002AF178  4E 80 04 21 */	bctrl
+L_802F0F1C:
+/* 802F0F1C 002AF17C  81 8D E4 7C */	lwz r12, _wpadTRNInit
+/* 802F0F20 002AF180  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F24 002AF184  41 82 00 0C */	beq L_802F0F30
+/* 802F0F28 002AF188  7D 89 03 A6 */	mtctr r12
+/* 802F0F2C 002AF18C  4E 80 04 21 */	bctrl
+L_802F0F30:
+/* 802F0F30 002AF190  81 8D E4 80 */	lwz r12, _wpadGTRInit
+/* 802F0F34 002AF194  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F38 002AF198  41 82 00 0C */	beq L_802F0F44
+/* 802F0F3C 002AF19C  7D 89 03 A6 */	mtctr r12
+/* 802F0F40 002AF1A0  4E 80 04 21 */	bctrl
+L_802F0F44:
+/* 802F0F44 002AF1A4  81 8D E4 84 */	lwz r12, _wpadDRMInit
+/* 802F0F48 002AF1A8  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F4C 002AF1AC  41 82 00 0C */	beq L_802F0F58
+/* 802F0F50 002AF1B0  7D 89 03 A6 */	mtctr r12
+/* 802F0F54 002AF1B4  4E 80 04 21 */	bctrl
+L_802F0F58:
+/* 802F0F58 002AF1B8  81 8D E4 88 */	lwz r12, _wpadTKOInit
+/* 802F0F5C 002AF1BC  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F60 002AF1C0  41 82 00 0C */	beq L_802F0F6C
+/* 802F0F64 002AF1C4  7D 89 03 A6 */	mtctr r12
+/* 802F0F68 002AF1C8  4E 80 04 21 */	bctrl
+L_802F0F6C:
+/* 802F0F6C 002AF1CC  81 8D E4 8C */	lwz r12, _wpadTBLInit
+/* 802F0F70 002AF1D0  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F74 002AF1D4  41 82 00 0C */	beq L_802F0F80
+/* 802F0F78 002AF1D8  7D 89 03 A6 */	mtctr r12
+/* 802F0F7C 002AF1DC  4E 80 04 21 */	bctrl
+L_802F0F80:
+/* 802F0F80 002AF1E0  81 8D E4 90 */	lwz r12, _wpadBLKInit
+/* 802F0F84 002AF1E4  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F88 002AF1E8  41 82 00 0C */	beq L_802F0F94
+/* 802F0F8C 002AF1EC  7D 89 03 A6 */	mtctr r12
+/* 802F0F90 002AF1F0  4E 80 04 21 */	bctrl
+L_802F0F94:
+/* 802F0F94 002AF1F4  81 8D E4 94 */	lwz r12, _wpadDRWInit
+/* 802F0F98 002AF1F8  2C 0C 00 00 */	cmpwi r12, 0x0
+/* 802F0F9C 002AF1FC  41 82 00 0C */	beq L_802F0FA8
+/* 802F0FA0 002AF200  7D 89 03 A6 */	mtctr r12
+/* 802F0FA4 002AF204  4E 80 04 21 */	bctrl
+L_802F0FA8:
+/* 802F0FA8 002AF208  38 7F 00 00 */	addi r3, r31, 0x0
+/* 802F0FAC 002AF20C  4B EE 44 25 */	bl OSCreateAlarm
+/* 802F0FB0 002AF210  4B FB 27 01 */	bl OSGetTime
+/* 802F0FB4 002AF214  3C A0 80 00 */	lis r5, 0x8000
+/* 802F0FB8 002AF218  3D 20 80 2F */	lis r9, __wpadManageHandler0@ha
+/* 802F0FBC 002AF21C  80 05 00 F8 */	lwz r0, 0xf8(r5)
+/* 802F0FC0 002AF220  3C C0 10 62 */	lis r6, 0x1062
+/* 802F0FC4 002AF224  7C 65 1B 78 */	mr r5, r3
+/* 802F0FC8 002AF228  39 29 0A 00 */	addi r9, r9, __wpadManageHandler0@l
+/* 802F0FCC 002AF22C  38 66 4D D3 */	addi r3, r6, 0x4dd3
+/* 802F0FD0 002AF230  54 00 F0 BE */	srwi r0, r0, 2
+/* 802F0FD4 002AF234  7C 03 00 16 */	mulhwu r0, r3, r0
+/* 802F0FD8 002AF238  7C 86 23 78 */	mr r6, r4
+/* 802F0FDC 002AF23C  38 7F 00 00 */	addi r3, r31, 0x0
+/* 802F0FE0 002AF240  38 E0 00 00 */	li r7, 0x0
+/* 802F0FE4 002AF244  54 08 D1 BE */	srwi r8, r0, 6
+/* 802F0FE8 002AF248  4B FA 87 39 */	bl OSSetPeriodicAlarm
+/* 802F0FEC 002AF24C  39 61 00 30 */	addi r11, r1, 0x30
+/* 802F0FF0 002AF250  4B FD 10 B1 */	bl _restgpr_24
+/* 802F0FF4 002AF254  80 01 00 34 */	lwz r0, 0x34(r1)
+/* 802F0FF8 002AF258  7C 08 03 A6 */	mtlr r0
+/* 802F0FFC 002AF25C  38 21 00 30 */	addi r1, r1, 0x30
+/* 802F1000 002AF260  4E 80 00 20 */	blr
+}
+#else
 // TODO on release
 static void __wpadInitSub(void) {
     __wpadSetSensorBarPower(TRUE);
@@ -1287,6 +1487,7 @@ static void __wpadInitSub(void) {
         &_wpadManageAlarm, OSGetTime(), OSMillisecondsToTicks(1), &__wpadManageHandler0
     );
 }
+#endif
 
 void WPADInit(void) {
     _wpadStartup = TRUE;
@@ -3433,8 +3634,14 @@ static u8 __wpadGetDpdSensitivity(void) {
 }
 
 static u8 __wpadGetSensorBarPosition(void) {
+#if DECOMP_MATCH
+    u8 pos = SCGetWpadSensorBarPosition();
+#define __extrwi(in, n, b) __rlwinm(in, b + n, 32 - n, 31)
+    return __extrwi(__cntlzw(pos - 1), 8, 19);
+#else
     return SCGetWpadSensorBarPosition() == SC_SENSOR_BAR_TOP ? SC_SENSOR_BAR_TOP
                                                              : SC_SENSOR_BAR_BOTTOM;
+#endif
 }
 
 static u32 __wpadGetMotorMode(void) {

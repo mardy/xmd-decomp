@@ -312,6 +312,7 @@ config.libs = [
         "progress_category": "sdk",  # str | List[str]
         "objects": [
             Object(Matching, "sdk/RVL_SDK/src/wpad/WPAD.c"),
+            Object(Matching, "sdk/RVL_SDK/src/wpad/WPADEncrypt.c"),
         ],
     },
 ]

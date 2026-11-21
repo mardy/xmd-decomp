@@ -313,6 +313,7 @@ config.libs = [
         "objects": [
             Object(Matching, "sdk/RVL_SDK/src/wpad/WPAD.c"),
             Object(Matching, "sdk/RVL_SDK/src/wpad/WPADEncrypt.c"),
+            Object(Matching, "sdk/RVL_SDK/src/wpad/WPADHIDParser.c"),
         ],
     },
 ]

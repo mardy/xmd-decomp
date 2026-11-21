@@ -38,9 +38,13 @@ sdk/RVL_SDK/src/wpad/WPAD.c:
 	.sdata2     start:0x807D6330 end:0x807D6338
 	.bss        start:0x808126E0 end:0x808166C0
 
-sdk/RVL_SDK/src/wpad/WPAD-todo1.c:
+sdk/RVL_SDK/src/wpad/WPADHIDParser.c:
 	.text       start:0x802F98B0 end:0x802FEB10
-	.bss        start:0x808166C0 end:0x808786A8
+	.rodata     start:0x806EDE00 end:0x806EDE30
+	.data       start:0x807887B0 end:0x807888AC
+	.sbss       start:0x807D1F58 end:0x807D1F70
+	.sdata2     start:0x807D6338 end:0x807D63B0
+	.bss        start:0x808166C0 end:0x80816710
 
 sdk/RVL_SDK/src/wpad/WPADEncrypt.c:
 	.text       start:0x802FEB10 end:0x802FF9C4

@@ -118,6 +118,8 @@ enum WPADDeviceType_et
 	WPAD_DEV_BULK_7				= 27,
 	WPAD_DEV_BULK_8				= 28,
 
+	WPAD_DEV_DRAW				= 29,
+
 	WPAD_DEV_MPLS_PT_UNKNOWN	= 250,
 
 	WPAD_DEV_251				= 251,
@@ -156,7 +158,7 @@ enum WPADDataFormat_et
 	WPAD_FMT_TAIKO					= 17,	/* name known from asserts */
 	WPAD_FMT_TURNTABLE				= 18,	/* name known from asserts */
 	WPAD_FMT_BULK					= 19,	/* name known from asserts */
-	WPAD_FMT_20						= 20,   /* unknown, added in 2010's SDK */
+	WPAD_FMT_DRAW					= 20,   /* Drawsome Tablet, added in 2010's SDK */
 };
 
 typedef s32 WPADDeviceMode;
@@ -574,9 +576,9 @@ typedef struct WPADAccGravityUnit
 	s16	z;	// size 0x02, offset 0x04
 } WPADAccGravityUnit; // size 0x06
 
-typedef struct WPADFmt20tatus
+typedef struct WPADDRWStatus
 {
-	WPADButton	unk0;						// size 0x02, offset 0x00
+	WPADButton	button;						// size 0x02, offset 0x00
 	s16			unk1;						// size 0x02, offset 0x02
 	s16			unk2;						// size 0x02, offset 0x04
 	s16			unk3;						// size 0x02, offset 0x06
@@ -589,7 +591,7 @@ typedef struct WPADFmt20tatus
 	u16			analog2;		// size 0x02, offset 0x2e
 	s8			unk7;	// size 0x01, offset 0x30
 	s8			unk8;	// size 0x01, offset 0x31
-} WPADFmt20tatus; // size 0x32
+} WPADDRWStatus; // size 0x32
 
 /*******************************************************************************
  * functions

@@ -540,8 +540,8 @@ static u32 __wpadFmt2Size(WPADDataFormat fmt) {
         fmtSize = sizeof(WPADTRStatus);
         break;
 
-    case WPAD_FMT_20:
-        fmtSize = 0x32;
+    case WPAD_FMT_DRAW:
+        fmtSize = sizeof(WPADDRWStatus);
         break;
 
     case WPAD_FMT_BALANCE_CHECKER:
@@ -721,9 +721,9 @@ static BOOL __wpadIsControllerDataChanged(wpad_cb_st *p_wpd, void *lhs, void *rh
             isChanged |= __wpadIsAnalogChanged(lhsTR->mascon, rhsTR->mascon, 1);
         } break;
 
-        case WPAD_FMT_20: {
-            WPADFmt20tatus *lhs20 = lhs;
-            WPADFmt20tatus *rhs20 = rhs;
+        case WPAD_FMT_DRAW: {
+            WPADDRWStatus *lhs20 = lhs;
+            WPADDRWStatus *rhs20 = rhs;
             isChanged |= __wpadIsAnalogChanged(lhs20->analog0, rhs20->analog0, 1);
             isChanged |= __wpadIsAnalogChanged(lhs20->analog1, rhs20->analog1, 1);
             isChanged |= __wpadIsAnalogChanged(lhs20->analog2, rhs20->analog2, 2);
@@ -3335,7 +3335,7 @@ BOOL WPADiSendSetReportType(
         cmdBlk.dataBuf[RPT12_DATA_REPORT_MODE] = RPTID_DATA_BTN_ACC_EXT16;
         break;
 
-    case WPAD_FMT_20:
+    case WPAD_FMT_DRAW:
         cmdBlk.dataBuf[RPT12_DATA_REPORT_MODE] = RPTID_DATA_BTN_ACC_EXT16;
         break;
 

@@ -347,7 +347,19 @@ static void __a1_37_data_type(u8 chan, byte_t *hidReport, void *rxBuffer);
 static void __a1_3d_data_type(u8 chan, byte_t *hidReport, void *rxBuffer);
 static void __a1_3e_data_type(u8 chan, byte_t *hidReport, void *rxBuffer);
 static void __a1_3f_data_type(u8 chan, byte_t *hidReport, void *rxBuffer);
-static void __a1_unused_report(u8 chan, byte_t *hidReport, void *rxBuffer);
+#if DECOMP_MATCH
+InputReportParser __init_user;
+#define __a1_unused_report __init_user
+#else
+static void __a1_unused_report(
+    u8 chan __attribute__((unused)),
+    byte_t *hidReport __attribute__((unused)),
+    void *rxBuffer __attribute__((unused))
+) {
+    return;
+}
+#endif
+
 static void __wpadCertReset(WPADChannel chan);
 
 /*******************************************************************************
@@ -379,38 +391,38 @@ static InputReportParser *__a1_input_reports_array[] =
 {
 	// double-indented entries are the used ones
 
-		&__a1_20_status_report,
-		&__a1_21_user_data,
-		&__a1_22_ack,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-		&__a1_30_data_type,
-		&__a1_31_data_type,
-		&__a1_32_data_type,
-		&__a1_33_data_type,
-		&__a1_34_data_type,
-		&__a1_35_data_type,
-		&__a1_36_data_type,
-		&__a1_37_data_type,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-	&__a1_unused_report,
-		&__a1_3d_data_type,
-		&__a1_3e_data_type,
-		&__a1_3f_data_type,
+		__a1_20_status_report,
+		__a1_21_user_data,
+		__a1_22_ack,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+		__a1_30_data_type,
+		__a1_31_data_type,
+		__a1_32_data_type,
+		__a1_33_data_type,
+		__a1_34_data_type,
+		__a1_35_data_type,
+		__a1_36_data_type,
+		__a1_37_data_type,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+	__a1_unused_report,
+		__a1_3d_data_type,
+		__a1_3e_data_type,
+		__a1_3f_data_type,
 };
 // clang-format on
 
@@ -849,6 +861,10 @@ static void __wpadGetExtConfig(WPADChannel chan, WPADResult result) {
     } else if (p_wpd->devType == WPAD_DEV_BALANCE_CHECKER) {
         if (p_wpd->wmReadLength == 1)
             return;
+    } else if (p_wpd->devType == WPAD_DEV_VSM) {
+        /* TODO: figure out what 0x20 is, maybe sizeof(WPADFmt20tatus)? */
+        if (p_wpd->wmReadLength != 0x20)
+            return;
     }
 
     if (p_wpd->extensionCB)
@@ -941,12 +957,16 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                     WUDIsLinkedWBC() ? WPAD_DEV_BALANCE_CHECKER : WPAD_DEV_251;
                 break;
 
-            case 16:
+            case 0x10:
                 _wpadDevType[chan] = WPADIsEnabledTRN() ? WPAD_DEV_TRAIN : WPAD_DEV_251;
                 break;
 
-            case 17:
+            case 0x11:
                 _wpadDevType[chan] = WPADIsEnabledTKO() ? WPAD_DEV_TAIKO : WPAD_DEV_251;
+                break;
+
+            case 0x12:
+                _wpadDevType[chan] = WPADIsEnabledDRW() ? WPAD_DEV_DRAW : WPAD_DEV_251;
                 break;
 
             case 3:
@@ -1325,6 +1345,7 @@ static void __wpadCheckDataFormat(u8 chan, u8 rep_id, void *data) {
 		&& (p_wpd->dataFormat == WPAD_FMT_FS_BTN_ACC
 		|| p_wpd->dataFormat == WPAD_FMT_CLASSIC_BTN_ACC
 		|| p_wpd->dataFormat == WPAD_FMT_VSM
+		|| p_wpd->dataFormat == WPAD_FMT_DRAW
 		|| p_wpd->dataFormat == WPAD_FMT_BULK))
 	|| (rep_id == RPTID_DATA_BTN_ACC_DPD10_EXT9
 		&& (p_wpd->dataFormat == WPAD_FMT_FS_BTN_ACC_DPD
@@ -1933,6 +1954,21 @@ static void __parse_tr_data(
     trStatus[0]->trButton = MAKE_TR_BUTTON(data[6], data[7]);
 }
 
+static void __parse_drw_data(
+    WPADChannel chan __attribute__((unused)),
+    WPADDRWStatus **status,
+    u8 trFormat __attribute__((unused)),
+    byte_t *data,
+    u8 length __attribute__((unused))
+) {
+#define EXTEND(a) ((s16)(s32)a)
+    status[0]->analog0 = ((data[2] & 0xf)<< 8) | EXTEND(data[0]);
+    status[0]->analog1 = ((data[2] & 0xf0)<< 4) | EXTEND(data[1]);
+    status[0]->analog2 = ((data[5] & 0xc)<< 6) | EXTEND(data[3]);
+    status[0]->button |= ((~data[5] & 0x3) << 13);
+#undef EXTEND
+}
+
 static void __parse_bl_data(
     WPADChannel chan,
     WPADBLStatus **blStatus,
@@ -2379,6 +2415,14 @@ static void __parse_ext_data(
                 p_wpd->extDataBuf,
                 p_wpd->extDataLength
             );
+        } else if (p_wpd->devType == WPAD_DEV_DRAW) {
+            __parse_drw_data(
+                chan,
+                (WPADDRWStatus **)&parseBuf,
+                p_wpd->devMode,
+                p_wpd->extDataBuf,
+                p_wpd->extDataLength
+            );
         } else if (p_wpd->devType == WPAD_DEV_BALANCE_CHECKER) {
             __parse_bl_data(
                 chan,
@@ -2594,14 +2638,6 @@ static void __a1_3f_data_type(u8 chan, byte_t *hidReport, void *rxBuffer) {
     }
 
     OSRestoreInterrupts(intrStatus);
-}
-
-static void __a1_unused_report(
-    u8 chan __attribute__((unused)),
-    byte_t *hidReport __attribute__((unused)),
-    void *rxBuffer __attribute__((unused))
-) {
-    return;
 }
 
 static void __wpadCertReset(WPADChannel chan) {

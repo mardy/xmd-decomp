@@ -206,7 +206,6 @@ cflags_base = [
     "-maxerrors 1",
     "-nosyspath",
     "-RTTI off",
-    "-fp_contract on",
     "-str reuse",
     "-i src/sdk/RVL_SDK",
     '-i src/sdk/PowerPC_EABI_Support/MSL/MSL_C',

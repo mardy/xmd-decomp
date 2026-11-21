@@ -1039,8 +1039,8 @@ static void __wpadManageHandler(
 ) {
     WPADLibStatus status = WPADGetStatus();
 
-    if (status != WPAD_LIB_STATUS_3) {
-        if (status == WPAD_LIB_STATUS_2 && !_wpadInitialized) {
+    if (status != WPAD_LIB_STATUS_SETUP) {
+        if (status == WPAD_LIB_STATUS_ENABLED && !_wpadInitialized) {
             _wpadInitialized = TRUE;
             _wpadReconnectWait = 50;
 
@@ -1124,7 +1124,7 @@ static void __wpadClearControlBlock(WPADChannel chan) {
 
     p_wpd->dataFormat = WPAD_FMT_CORE_BTN;
     p_wpd->status = WPAD_ENODEV;
-    p_wpd->devType = WPAD_DEV_NONE;
+    p_wpd->devType = WPAD_DEV_NOT_FOUND;
     p_wpd->devMode = WPAD_DEV_MODE_NORMAL;
 
     p_wpd->calibrated = FALSE;
@@ -1165,7 +1165,7 @@ static void __wpadClearControlBlock(WPADChannel chan) {
     p_wpd->getInfoCB = NULL;
     p_wpd->disableContReport = FALSE;
     p_wpd->blcBattery = 4;
-    p_wpd->savedDevType = WPAD_DEV_NONE;
+    p_wpd->savedDevType = WPAD_DEV_NOT_FOUND;
     p_wpd->extWasDisconnected = FALSE;
     p_wpd->reconnectExtMs = 0;
     p_wpd->interleaveFlags = WPAD_ILBUF_NONE;
@@ -1224,7 +1224,7 @@ static void __wpadClearControlBlock(WPADChannel chan) {
 
     p_wpd->noParseExtCount = 0;
     p_wpd->extErr = WPAD_ENODEV;
-    p_wpd->extDevType = WPAD_DEV_NONE;
+    p_wpd->extDevType = WPAD_DEV_NOT_FOUND;
     p_wpd->extDataLength = 0;
     memset(&p_wpd->extDataBuf, 0, sizeof p_wpd->extDataBuf);
 
@@ -1651,7 +1651,7 @@ static void __wpadCheckIntegrationCallback(WPADChannel chan, WPADResult result) 
      */
     if (result == WPAD_ESUCCESS && p_wpd->wmReadDataBuf[0x0f] == 0x05) {
         p_wpd->mplsIdentificator = p_wpd->wmReadDataBuf[0x0a];
-    } else if (result == WPAD_ERR_3) {
+    } else if (result == WPAD_ERR_TRANSFER) {
         p_wpd->mplsIdentificator = 0;
     }
     if (p_wpd->mplsIdentificator != 0 && p_wpd->mplsIdentificator != 0x01) {
@@ -1783,7 +1783,7 @@ static void __wpadConnectionCallback(WUDDevInfo *devInfo, u8 success) {
             p_wpd->devType = WPAD_DEV_BALANCE_CHECKER;
             p_wpd->dataFormat = WPAD_FMT_BALANCE_CHECKER;
         } else {
-            p_wpd->devType = WPAD_DEV_251;
+            p_wpd->devType = WPAD_DEV_FUTURE;
             p_wpd->dataFormat = WPAD_FMT_CORE_BTN;
         }
 
@@ -1976,7 +1976,7 @@ WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut) {
 
     WPADResult status = p_wpd->status;
     if (status != WPAD_ENODEV) {
-        if (p_wpd->devType == WPAD_DEV_NONE)
+        if (p_wpd->devType == WPAD_DEV_NOT_FOUND)
             status = WPAD_ENODEV;
         else if (!p_wpd->handshakeFinished)
             status = WPAD_ECOMM;
@@ -2708,7 +2708,7 @@ __wpadDpdCallback(WPADChannel chan, WPADResult result __attribute__((unused))) {
 
 WPADResult WPADControlDpd(WPADChannel chan, WPADDpdCommand command, WPADCallback *cb) {
     // clang-format off
-	static const byte_t cfg1[WPAD_MAX_DPD_SENS][9] =
+	static const byte_t cfg1[WPAD_DPD_MAX_SENS][9] =
 	{
 		{0x02, 0x00, 0x00, 0x71, 0x01, 0x00, 0x64, 0x00, 0xfe},
 		{0x02, 0x00, 0x00, 0x71, 0x01, 0x00, 0x96, 0x00, 0xb4},
@@ -2717,7 +2717,7 @@ WPADResult WPADControlDpd(WPADChannel chan, WPADDpdCommand command, WPADCallback
 		{0x07, 0x00, 0x00, 0x71, 0x01, 0x00, 0x72, 0x00, 0x20}
 	};
 
-	static const byte_t cfg2[WPAD_MAX_DPD_SENS][2] =
+	static const byte_t cfg2[WPAD_DPD_MAX_SENS][2] =
 	{
 		{0xfd, 0x05},
 		{0xb3, 0x04},
@@ -2958,7 +2958,7 @@ static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
                 && p_wpd->mplsCBReadBuf[1] != WPAD_DEV_MPLS_PT_UNKNOWN) {
                 p_wpd->mplsCBCounter--;
                 if (!p_wpd->mplsCBCounter) {
-                    status = WPAD_ERR_3;
+                    status = WPAD_ERR_TRANSFER;
                 } else {
                     if (p_wpd->mplsCBCounter > 1)
                         p_wpd->mplsCBReadAddress = WM_REG_MPLS_DEV_MODE;
@@ -3001,7 +3001,7 @@ static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
                     ));
                 }
             }
-        } else if (result == WPAD_ERR_3) {
+        } else if (result == WPAD_ERR_TRANSFER) {
             if (p_wpd->mplsCBCounter) {
                 if (--p_wpd->mplsCBCounter > 1)
                     p_wpd->mplsCBReadAddress = WM_REG_MPLS_DEV_MODE;
@@ -3034,7 +3034,7 @@ static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
                     &__wpadMplsCallback
                 ));
             } else {
-                status = WPAD_ERR_3;
+                status = WPAD_ERR_TRANSFER;
             }
         }
 
@@ -3074,7 +3074,7 @@ static void __wpadMplsCallback(WPADChannel chan, WPADResult result) {
                     &p_wpd->stdCmdQueue, 0x00, WM_REG_EXTENSION_F2, &__wpadMplsCallback
                 ));
             } else {
-                status = WPAD_ERR_3;
+                status = WPAD_ERR_TRANSFER;
             }
         }
 
@@ -3624,11 +3624,11 @@ static void __wpadSetScreenSaverFlag(BOOL disabled) {
 static u8 __wpadGetDpdSensitivity(void) {
     u8 dpdSens = SCGetBtDpdSensibility();
 
-    if (dpdSens < WPAD_MIN_DPD_SENS)
-        dpdSens = WPAD_MIN_DPD_SENS;
+    if (dpdSens < WPAD_DPD_MIN_SENS)
+        dpdSens = WPAD_DPD_MIN_SENS;
 
-    if (dpdSens > WPAD_MAX_DPD_SENS)
-        dpdSens = WPAD_MAX_DPD_SENS;
+    if (dpdSens > WPAD_DPD_MAX_SENS)
+        dpdSens = WPAD_DPD_MAX_SENS;
 
     return dpdSens;
 }
@@ -3748,13 +3748,13 @@ static void __wpadCertFailed(WPADChannel chan) {
 
         p_wpd->wmParamOffset = 0;
         p_wpd->certMayVerifyByCalibBlock = -1;
-        p_wpd->devType = WPAD_DEV_252;
+        p_wpd->devType = WPAD_DEV_NOT_SUPPORTED;
 
         break;
     }
 
     if (p_wpd->extensionCB)
-        (*p_wpd->extensionCB)(chan, WPAD_DEV_252);
+        (*p_wpd->extensionCB)(chan, WPAD_DEV_NOT_SUPPORTED);
 }
 
 static void __wpadCertCalcMulX(WPADChannel chan) {

@@ -456,13 +456,13 @@ static void __wpadAbortInitExtension(WPADChannel chan, WPADResult result) {
 
     s32 devType;
     if (result == WPAD_ENODEV) {
-        devType = WPAD_DEV_NONE;
+        devType = WPAD_DEV_NOT_FOUND;
     } else if (p_wpd->wpInfo.attach) {
         if (_wpadExtInitRetryCnt[chan]++ < 32) {
             __wpadInitExtension(chan);
             return;
         } else {
-            devType = WPAD_DEV_252;
+            devType = WPAD_DEV_NOT_SUPPORTED;
         }
     } else {
         WPADiSendSetReportType(
@@ -491,15 +491,15 @@ static void __wpadGetDevConfig(WPADChannel chan, WPADResult result) {
     f32 x, y;
     f32 x_atan, y_atan;
 
-    DPDObject obj[WPAD_MAX_DPD_OBJECTS];
-    f32 a[WPAD_MAX_DPD_OBJECTS];
-    f32 b[WPAD_MAX_DPD_OBJECTS];
-    f32 c[WPAD_MAX_DPD_OBJECTS];
-    f32 d[WPAD_MAX_DPD_OBJECTS];
-    s16 defaultDpdX[WPAD_MAX_DPD_OBJECTS] = { 127, 896, 896, 127 };
-    s16 defaultDpdY[WPAD_MAX_DPD_OBJECTS] = { 93, 93, 674, 674 };
+    DPDObject obj[WPAD_DPD_MAX_OBJECTS];
+    f32 a[WPAD_DPD_MAX_OBJECTS];
+    f32 b[WPAD_DPD_MAX_OBJECTS];
+    f32 c[WPAD_DPD_MAX_OBJECTS];
+    f32 d[WPAD_DPD_MAX_OBJECTS];
+    s16 defaultDpdX[WPAD_DPD_MAX_OBJECTS] = { 127, 896, 896, 127 };
+    s16 defaultDpdY[WPAD_DPD_MAX_OBJECTS] = { 93, 93, 674, 674 };
 
-    for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+    for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
         p_wpd->devConfig.dpd[i].x = (s16)defaultDpdX[i];
         p_wpd->devConfig.dpd[i].y = (s16)defaultDpdY[i];
         p_wpd->devConfig.dpd[i].size = p_wpd->defaultDpdSize;
@@ -552,7 +552,7 @@ static void __wpadGetDevConfig(WPADChannel chan, WPADResult result) {
             obj[3].size = p_wpd->defaultDpdSize;
             obj[3].traceId = 3;
 
-            for (j = 0; j < WPAD_MAX_DPD_OBJECTS; j++) {
+            for (j = 0; j < WPAD_DPD_MAX_OBJECTS; j++) {
                 if (obj[j].x < 0x200 && obj[j].y < 0x180) {
                     p_wpd->devConfig.dpd[DPD_CFG_OBJ_BL].x = obj[j].x;
                     p_wpd->devConfig.dpd[DPD_CFG_OBJ_BL].y = obj[j].y;
@@ -587,7 +587,7 @@ static void __wpadGetDevConfig(WPADChannel chan, WPADResult result) {
     }
 
     x = y = 0.0f;
-    for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+    for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
         a[i] = p_wpd->devConfig.dpd[i].x;
         b[i] = p_wpd->devConfig.dpd[i].y;
         x += p_wpd->devConfig.dpd[i].x - defaultDpdX[i];
@@ -619,7 +619,7 @@ static void __wpadGetDevConfig(WPADChannel chan, WPADResult result) {
 
     _wpadRolag[chan] = 0;
 
-    for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+    for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
         c[i] = atan((b[i] - _wpadCenterY[chan]) / (a[i] - _wpadCenterX[chan]));
         d[i] = atan((defaultDpdY[i] - 383.5f) / (defaultDpdX[i] - 511.5f));
 
@@ -766,7 +766,7 @@ static void __wpadGetExtConfig(WPADChannel chan, WPADResult result) {
 
     switch (result) {
     case WPAD_ENODEV:
-        p_wpd->devType = WPAD_DEV_NONE;
+        p_wpd->devType = WPAD_DEV_NOT_FOUND;
         p_wpd->savedDevType = p_wpd->devType;
         p_wpd->extWasDisconnected = FALSE;
         break;
@@ -776,7 +776,7 @@ static void __wpadGetExtConfig(WPADChannel chan, WPADResult result) {
         break;
 
     default:
-        p_wpd->devType = WPAD_DEV_252; // can't get device?
+        p_wpd->devType = WPAD_DEV_NOT_SUPPORTED; // can't get device?
         p_wpd->savedDevType = p_wpd->devType;
         p_wpd->extWasDisconnected = FALSE;
         break;
@@ -853,7 +853,7 @@ static void __wpadGetExtConfig(WPADChannel chan, WPADResult result) {
 
         if (p_wpd->certMayVerifyByCalibBlock != TRUE
             && p_wpd->certProbeStartingValue >= 14) {
-            p_wpd->devType = _wpadDevType[chan] = WPAD_DEV_252;
+            p_wpd->devType = _wpadDevType[chan] = WPAD_DEV_NOT_SUPPORTED;
         }
 
         p_wpd->lastMplsCalibID = p_wpd->extConfig.mpls.calibID;
@@ -901,7 +901,7 @@ static void __wpadGetExtConfig2(WPADChannel chan, WPADResult result) {
         } else {
             p_wpd->parseMPState = 4;
         }
-    } else if (result == WPAD_ERR_3) {
+    } else if (result == WPAD_ERR_TRANSFER) {
         p_wpd->parseMPState = 2;
     }
 }
@@ -937,7 +937,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
         }
 
         if (memcmp(data, _cExtInvalidData, 16) == 0 || (data[12] == 0 && data[13] == 0)) {
-            _wpadDevType[chan] = WPAD_DEV_252;
+            _wpadDevType[chan] = WPAD_DEV_NOT_SUPPORTED;
             _wpadDevMode[chan] = WPAD_DEV_MODE_NORMAL;
         } else {
             _wpadCLCompt[chan] = FALSE;
@@ -954,19 +954,19 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
 
             case 2:
                 _wpadDevType[chan] =
-                    WUDIsLinkedWBC() ? WPAD_DEV_BALANCE_CHECKER : WPAD_DEV_251;
+                    WUDIsLinkedWBC() ? WPAD_DEV_BALANCE_CHECKER : WPAD_DEV_FUTURE;
                 break;
 
             case 0x10:
-                _wpadDevType[chan] = WPADIsEnabledTRN() ? WPAD_DEV_TRAIN : WPAD_DEV_251;
+                _wpadDevType[chan] = WPADIsEnabledTRN() ? WPAD_DEV_TRAIN : WPAD_DEV_FUTURE;
                 break;
 
             case 0x11:
-                _wpadDevType[chan] = WPADIsEnabledTKO() ? WPAD_DEV_TAIKO : WPAD_DEV_251;
+                _wpadDevType[chan] = WPADIsEnabledTKO() ? WPAD_DEV_TAIKO : WPAD_DEV_FUTURE;
                 break;
 
             case 0x12:
-                _wpadDevType[chan] = WPADIsEnabledDRW() ? WPAD_DEV_DRAW : WPAD_DEV_251;
+                _wpadDevType[chan] = WPADIsEnabledDRW() ? WPAD_DEV_DRAW : WPAD_DEV_FUTURE;
                 break;
 
             case 3:
@@ -978,61 +978,61 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                     switch (data[10]) {
                     case 0:
                         _wpadDevType[chan] =
-                            WPADIsEnabledGTR() ? WPAD_DEV_GUITAR : WPAD_DEV_251;
+                            WPADIsEnabledGTR() ? WPAD_DEV_GUITAR : WPAD_DEV_FUTURE;
                         break;
 
                     case 1:
                         _wpadDevType[chan] =
-                            WPADIsEnabledDRM() ? WPAD_DEV_DRUM : WPAD_DEV_251;
+                            WPADIsEnabledDRM() ? WPAD_DEV_DRUM : WPAD_DEV_FUTURE;
                         break;
 
                     case 3:
                         _wpadDevType[chan] =
-                            WPADIsEnabledTBL() ? WPAD_DEV_TURNTABLE : WPAD_DEV_251;
+                            WPADIsEnabledTBL() ? WPAD_DEV_TURNTABLE : WPAD_DEV_FUTURE;
                         break;
 
                     case 4:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_1 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_1 : WPAD_DEV_FUTURE;
                         break;
 
                     case 5:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_2 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_2 : WPAD_DEV_FUTURE;
                         break;
 
                     case 6:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_3 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_3 : WPAD_DEV_FUTURE;
                         break;
 
                     case 7:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_4 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_4 : WPAD_DEV_FUTURE;
                         break;
 
                     case 8:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_5 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_5 : WPAD_DEV_FUTURE;
                         break;
 
                     case 9:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_6 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_6 : WPAD_DEV_FUTURE;
                         break;
 
                     case 10:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_7 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_7 : WPAD_DEV_FUTURE;
                         break;
 
                     case 11:
                         _wpadDevType[chan] =
-                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_8 : WPAD_DEV_251;
+                            WPADIsEnabledBLK() ? WPAD_DEV_BULK_8 : WPAD_DEV_FUTURE;
                         break;
 
                     default:
-                        _wpadDevType[chan] = WPAD_DEV_251;
+                        _wpadDevType[chan] = WPAD_DEV_FUTURE;
                         break;
                     }
                 }
@@ -1044,7 +1044,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                     _wpadDevType[chan] = WPAD_DEV_VSM;
                     p_wpd->unk_0xbbc = 0;
                 } else {
-                    _wpadDevType[chan] = WPAD_DEV_251;
+                    _wpadDevType[chan] = WPAD_DEV_FUTURE;
                 }
 
                 break;
@@ -1058,13 +1058,13 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                     break;
 
                 default:
-                    _wpadDevType[chan] = WPAD_DEV_251;
+                    _wpadDevType[chan] = WPAD_DEV_FUTURE;
                     break;
                 }
 
                 p_wpd->hasReadExtType2 = FALSE;
                 p_wpd->parseMPState = 0;
-                p_wpd->unk_0x93c = WPAD_DEV_NONE;
+                p_wpd->unk_0x93c = WPAD_DEV_NOT_FOUND;
 
                 _wpadDevType2[chan] = data[9];
                 _wpadDevType2Sub[chan] = data[8];
@@ -1074,7 +1074,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                 break;
 
             default:
-                _wpadDevType[chan] = WPAD_DEV_251;
+                _wpadDevType[chan] = WPAD_DEV_FUTURE;
                 break;
             }
         }
@@ -1082,7 +1082,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
         if (_wpadDevType[chan] == WPAD_DEV_CLASSIC
             && (_wpadDevMode[chan] < WPAD_DEV_MODE_CLASSIC_REDUCED
                 || _wpadDevMode[chan] > WPAD_DEV_MODE_CLASSIC_STANDARD)) {
-            _wpadDevType[chan] = WPAD_DEV_252;
+            _wpadDevType[chan] = WPAD_DEV_NOT_SUPPORTED;
         }
 
         if (p_wpd->extWasDisconnected && p_wpd->savedDevType == _wpadDevType[chan]) {
@@ -1095,7 +1095,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
         p_wpd->savedDevType = _wpadDevType[chan];
         p_wpd->extWasDisconnected = FALSE;
 
-        if (_wpadDevType[chan] == WPAD_DEV_251 || _wpadDevType[chan] == WPAD_DEV_252) {
+        if (_wpadDevType[chan] == WPAD_DEV_FUTURE || _wpadDevType[chan] == WPAD_DEV_NOT_SUPPORTED) {
             p_wpd->devType = _wpadDevType[chan];
             p_wpd->devMode = _wpadDevMode[chan];
 
@@ -1176,7 +1176,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
             );
         }
     } else {
-        p_wpd->devType = WPAD_DEV_252;
+        p_wpd->devType = WPAD_DEV_NOT_SUPPORTED;
         p_wpd->devMode = WPAD_DEV_MODE_NORMAL;
         p_wpd->savedDevType = p_wpd->devType;
         p_wpd->extWasDisconnected = FALSE;
@@ -1528,7 +1528,7 @@ static void __a1_21_user_data(u8 chan, byte_t *hidReport, void *rxBuffer) {
 
         if (p_wpd->cmdBlkCB) {
             if (!p_wpd->extensionCB || p_wpd->extensionCB != p_wpd->cmdBlkCB)
-                (*p_wpd->cmdBlkCB)(chan, WPAD_ERR_3);
+                (*p_wpd->cmdBlkCB)(chan, WPAD_ERR_TRANSFER);
 
             p_wpd->cmdBlkCB = NULL;
         }
@@ -1645,7 +1645,7 @@ static void __parse_dpd_data(
     u8 i;
     u8 a, b, c;
     if (dpdFormat == WPAD_DPD_STANDARD) {
-        for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+        for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
             if (i * 3 + 2 < length) {
                 a = ((u8 *)(data + i * 3))[0];
                 b = ((u8 *)(data + i * 3))[1];
@@ -1672,7 +1672,7 @@ static void __parse_dpd_data(
             }
         }
     } else if (dpdFormat == WPAD_DPD_BASIC) {
-        for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+        for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
             a = GET_DPD_BASIC_REPORT_X_LOW_BYTE(data, i);
             b = GET_DPD_BASIC_REPORT_Y_LOW_BYTE(data, i);
             c = GET_DPD_BASIC_REPORT_XY_HIGH_BITS(data, i);
@@ -1700,7 +1700,7 @@ static void __parse_dpd_data(
     }
 
     f32 fx, fy;
-    for (i = 0; i < WPAD_MAX_DPD_OBJECTS; i++) {
+    for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
         if (status[0]->obj[i].x != 0 || status[0]->obj[i].y != DPD_MAX_Y) {
             fx = (f32)status[0]->obj[i].x + _wpadCalibrationX[chan] - _wpadCenterX[chan];
             fy = (f32)status[0]->obj[i].y + _wpadCalibrationY[chan] - _wpadCenterY[chan];

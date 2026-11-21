@@ -15,10 +15,16 @@
  * macros
  */
 
-#define WPAD_MAX_DPD_OBJECTS	4
+#define WPAD_DPD_MAX_OBJECTS	4
 
-#define WPAD_MIN_DPD_SENS		1
-#define WPAD_MAX_DPD_SENS		5
+#define WPAD_DPD_MIN_SENS		1
+#define WPAD_DPD_MAX_SENS		5
+
+#define WPAD_DPD_IMG_RESO_WX 1024
+#define WPAD_DPD_IMG_RESO_WY 768
+
+#define WPAD_SENSOR_BAR_POS_TOP 1
+#define WPAD_SENSOR_BAR_POS_BOTTOM 0
 
 /*******************************************************************************
  * types
@@ -35,8 +41,8 @@ enum WPADResult_et
 	WPAD_ERR_OK						= 0,
 
 	WPAD_ERR_NO_CONTROLLER			= -1,	/* name known from asserts */
-	WPAD_ERR_COMMUNICATION_ERROR	= -2,	// [RT3P54] has this as WPAD_ERR_BUSY
-	WPAD_ERR_3						= -3,	// [RT3P54] has this as WPAD_ERR_TRANSFER
+	WPAD_ERR_BUSY					= -2,
+	WPAD_ERR_TRANSFER				= -3,
 	WPAD_ERR_INVALID				= -4,	/* name comes from [R89JEL] */
 //	WPAD_ERR_5						= -5,	/* unknown */
 //	WPAD_ERR_6						= -6,	/* unknown */
@@ -44,7 +50,7 @@ enum WPADResult_et
 
 #define WPAD_ESUCCESS	WPAD_ERR_OK
 #define WPAD_ENODEV		WPAD_ERR_NO_CONTROLLER
-#define WPAD_ECOMM		WPAD_ERR_COMMUNICATION_ERROR
+#define WPAD_ECOMM		WPAD_ERR_BUSY
 // #define WPAD_E3
 #define WPAD_EINVAL		WPAD_ERR_INVALID
 
@@ -60,7 +66,7 @@ enum WPADResult_et
 #define WPAD_CESUCCESS	(WPAD_ESUCCESS + 0)
 #define WPAD_CENODEV	(WPAD_ENODEV + 0)
 #define WPAD_CECOMM		(WPAD_ECOMM + 0)
-#define WPAD_CERR_3		(WPAD_ERR_3 + 0)
+#define WPAD_CERR_3		(WPAD_ERR_TRANSFER + 0)
 #define WPAD_CEINVAL	(WPAD_EINVAL + 0)
 #define WPAD_CEBADE		(WPAD_EBADE + 0)
 };
@@ -68,11 +74,11 @@ enum WPADResult_et
 typedef WUDLibStatus WPADLibStatus;
 enum WPADLibStatus_et
 {
-	WPAD_LIB_STATUS_0	= WUD_LIB_STATUS_0,
-	WPAD_LIB_STATUS_1	= WUD_LIB_STATUS_1,
-	WPAD_LIB_STATUS_2	= WUD_LIB_STATUS_2,
-	WPAD_LIB_STATUS_3	= WUD_LIB_STATUS_3,
-	WPAD_LIB_STATUS_4	= WUD_LIB_STATUS_4,
+	WPAD_LIB_STATUS_DISABLED	= WUD_LIB_STATUS_0,
+	WPAD_LIB_STATUS_ENABLING	= WUD_LIB_STATUS_1,
+	WPAD_LIB_STATUS_ENABLED		= WUD_LIB_STATUS_2,
+	WPAD_LIB_STATUS_SETUP		= WUD_LIB_STATUS_3,
+	WPAD_LIB_STATUS_DISABLING	= WUD_LIB_STATUS_4,
 };
 
 // for ease of use in for loops
@@ -122,9 +128,9 @@ enum WPADDeviceType_et
 
 	WPAD_DEV_MPLS_PT_UNKNOWN	= 250,
 
-	WPAD_DEV_251				= 251,
-	WPAD_DEV_252				= 252,	// invalid device mode?
-	WPAD_DEV_NONE				= 253,	// sort of like WPAD_ENODEV (see __wpadAbortInitExtension in WPADHIDParser.c)
+	WPAD_DEV_FUTURE				= 251,
+	WPAD_DEV_NOT_SUPPORTED		= 252,
+	WPAD_DEV_NOT_FOUND			= 253,	// sort of like WPAD_ENODEV (see __wpadAbortInitExtension in WPADHIDParser.c)
 //	WPAD_DEV_254				= 254,	/* unknown, doesn't seem to be used anywhere */
 	WPAD_DEV_INITIALIZING		= 255,	// see __a1_20_status_report
 };
@@ -390,7 +396,7 @@ typedef struct WPADStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 } WPADStatus; // size 0x2a
@@ -408,11 +414,11 @@ typedef struct WPADStatusEx
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
-	DPDObjEx	exp[WPAD_MAX_DPD_OBJECTS];	// size 0x30, offset 0x2a
+	DPDObjEx	exp[WPAD_DPD_MAX_OBJECTS];	// size 0x30, offset 0x2a
 } WPADStatusEx; // size 0x5a
 
 // [SGLEA4]/GormitiDebug.elf:.debug_info::0x79e65
@@ -422,7 +428,7 @@ typedef struct WPADFSStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -440,7 +446,7 @@ typedef struct WPADCLStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -460,7 +466,7 @@ typedef struct WPADTRStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -476,7 +482,7 @@ typedef struct WPADBLStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -492,7 +498,7 @@ typedef struct WPADMPStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -539,7 +545,7 @@ typedef struct WPADBKStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -553,7 +559,7 @@ typedef struct WPADVSStatus
 	s16			accX;						// size 0x02, offset 0x02
 	s16			accY;						// size 0x02, offset 0x04
 	s16			accZ;						// size 0x02, offset 0x06
-	DPDObject	obj[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	obj[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			dev;						// size 0x01, offset 0x28
 	s8			err;						// size 0x01, offset 0x29
 
@@ -575,6 +581,7 @@ typedef struct WPADAccGravityUnit
 	s16	y;	// size 0x02, offset 0x02
 	s16	z;	// size 0x02, offset 0x04
 } WPADAccGravityUnit; // size 0x06
+typedef struct WPADAccGravityUnit WPADAcc;
 
 typedef struct WPADDRWStatus
 {
@@ -582,7 +589,7 @@ typedef struct WPADDRWStatus
 	s16			unk1;						// size 0x02, offset 0x02
 	s16			unk2;						// size 0x02, offset 0x04
 	s16			unk3;						// size 0x02, offset 0x06
-	DPDObject	unk4[WPAD_MAX_DPD_OBJECTS];	// size 0x20, offset 0x08
+	DPDObject	unk4[WPAD_DPD_MAX_OBJECTS];	// size 0x20, offset 0x08
 	u8			unk5;						// size 0x01, offset 0x28
 	s8			unk6;						// size 0x01, offset 0x29
 

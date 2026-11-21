@@ -227,7 +227,7 @@ struct WPADMplsCalibration {
 }; // size 0x1c
 
 struct WPADDevConfig {
-    DPDObject dpd[WPAD_MAX_DPD_OBJECTS]; // size 0x20, offset 0x00
+    DPDObject dpd[WPAD_DPD_MAX_OBJECTS]; // size 0x20, offset 0x00
 
     s16 accX0g; // size 0x02, offset 0x20
     s16 accY0g; // size 0x02, offset 0x22

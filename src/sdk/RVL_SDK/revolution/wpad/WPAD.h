@@ -74,11 +74,11 @@ enum WPADResult_et
 typedef WUDLibStatus WPADLibStatus;
 enum WPADLibStatus_et
 {
-	WPAD_LIB_STATUS_DISABLED	= WUD_LIB_STATUS_0,
-	WPAD_LIB_STATUS_ENABLING	= WUD_LIB_STATUS_1,
-	WPAD_LIB_STATUS_ENABLED		= WUD_LIB_STATUS_2,
-	WPAD_LIB_STATUS_SETUP		= WUD_LIB_STATUS_3,
-	WPAD_LIB_STATUS_DISABLING	= WUD_LIB_STATUS_4,
+	WPAD_STATE_DISABLED	= WUD_LIB_STATUS_0,
+	WPAD_STATE_ENABLING	= WUD_LIB_STATUS_1,
+	WPAD_STATE_ENABLED		= WUD_LIB_STATUS_2,
+	WPAD_STATE_SETUP		= WUD_LIB_STATUS_3,
+	WPAD_STATE_DISABLING	= WUD_LIB_STATUS_4,
 };
 
 // for ease of use in for loops
@@ -126,7 +126,7 @@ enum WPADDeviceType_et
 
 	WPAD_DEV_DRAW				= 29,
 
-	WPAD_DEV_MPLS_PT_UNKNOWN	= 250,
+	WPAD_DEV_MPLS_PT_FUTURE     = 250,
 
 	WPAD_DEV_FUTURE				= 251,
 	WPAD_DEV_NOT_SUPPORTED		= 252,
@@ -203,8 +203,8 @@ enum WPADButton_et
 	WPAD_BUTTON_B		= (1 << 10),
 	WPAD_BUTTON_A		= (1 << 11),
 	WPAD_BUTTON_MINUS	= (1 << 12),
-	//					  (1 << 13),	// WPAD_BUTTON_FS_Z
-	//					  (1 << 14),	// WPAD_BUTTON_FS_C
+	WPAD_BUTTON_Z		= (1 << 13),	// WPAD_BUTTON_FS_Z
+	WPAD_BUTTON_C		= (1 << 14),	// WPAD_BUTTON_FS_C
 	WPAD_BUTTON_HOME	= (1 << 15),
 
 	WPAD_BUTTON_ALL		= 0x9f1f
@@ -343,13 +343,13 @@ typedef WUDFreeFunc WPADFreeFunc;
 
 typedef void WPADInitFunc(void); // see __wpadInitSub in WPAD.c
 
-typedef void WPADCallback(WPADChannel chan, WPADResult result);
+typedef void (*WPADCallback)(WPADChannel chan, WPADResult result);
 
-typedef void WPADSamplingCallback(WPADChannel chan);
-typedef void WPADConnectCallback(WPADChannel chan, s32 result);
-typedef void WPADExtensionCallback(WPADChannel chan, WPADDeviceType devType);
+typedef void (*WPADSamplingCallback)(WPADChannel chan);
+typedef void (*WPADConnectCallback)(WPADChannel chan, s32 result);
+typedef void (*WPADExtensionCallback)(WPADChannel chan, WPADDeviceType devType);
 
-typedef WUDSyncDeviceCallback WPADSimpleSyncCallback;
+typedef WUDSyncDeviceCallback* WPADSimpleSyncCallback;
 
 // [SGLEA4]/GormitiDebug.elf:.debug_info::0x79f49
 typedef struct DPDObject
@@ -615,10 +615,10 @@ BOOL WPADIsEnabledDRW(void);
 
 // Likely overridden by a WBC-specific library
 __attribute__((weak)) WPADResult WBCSetupCalibration(void);
-__attribute__((weak)) signed WBCGetCalibrationStatus(void);
-__attribute__((weak)) signed WBCGetBatteryLevel(u8);
-__attribute__((weak)) WPADResult WBCRead(WPADBLStatus *, f64 *, int);
-__attribute__((weak)) WPADResult WBCSetZEROPoint(f64 *, int);
+__attribute__((weak)) WPADResult WBCGetCalibrationStatus(void);
+__attribute__((weak)) WPADResult WBCGetBatteryLevel(u8);
+__attribute__((weak)) WPADResult WBCRead(WPADBLStatus *, f64 *, u32);
+__attribute__((weak)) WPADResult WBCSetZEROPoint(f64 *, u32);
 __attribute__((weak)) WPADResult WBCGetTGCWeight(f64, f64 *, WPADBLStatus *);
 
 void WPADInit(void);
@@ -627,7 +627,7 @@ void WPADShutdown(void);
 BOOL WPADStartFastSimpleSync(void);
 BOOL WPADStopSimpleSync(void);
 BOOL WPADCancelSyncDevice(void);
-WPADSimpleSyncCallback *WPADSetSimpleSyncCallback(WPADSimpleSyncCallback *cb);
+WPADSimpleSyncCallback WPADSetSimpleSyncCallback(WPADSimpleSyncCallback cb);
 void WPADRegisterAllocator(WPADAllocFunc *alloc, WPADFreeFunc *free);
 WPADLibStatus WPADGetStatus(void);
 u8 WPADGetRadioSensitivity(WPADChannel chan);
@@ -639,16 +639,16 @@ void WPADGetAccGravityUnit(WPADChannel chan, WPADAccGravityUnitType type,
 
 void WPADDisconnect(WPADChannel chan);
 WPADResult WPADProbe(WPADChannel chan, WPADDeviceType *devTypeOut);
-WPADSamplingCallback *WPADSetSamplingCallback(WPADChannel chan,
-                                              WPADSamplingCallback *cb);
-WPADConnectCallback *WPADSetConnectCallback(WPADChannel chan,
-                                            WPADConnectCallback *cb);
-WPADExtensionCallback *WPADSetExtensionCallback(WPADChannel chan,
-                                                WPADExtensionCallback *cb);
+WPADSamplingCallback WPADSetSamplingCallback(WPADChannel chan,
+                                             WPADSamplingCallback cb);
+WPADConnectCallback WPADSetConnectCallback(WPADChannel chan,
+                                           WPADConnectCallback cb);
+WPADExtensionCallback WPADSetExtensionCallback(WPADChannel chan,
+                                               WPADExtensionCallback cb);
 WPADDataFormat WPADGetDataFormat(WPADChannel chan);
 WPADResult WPADSetDataFormat(WPADChannel chan, WPADDataFormat fmt);
 
-WPADResult WPADGetInfoAsync(WPADChannel chan, WPADInfo *info, WPADCallback *cb);
+WPADResult WPADGetInfoAsync(WPADChannel chan, WPADInfo *info, WPADCallback cb);
 void WPADControlMotor(WPADChannel chan, WPADMotorCommand command);
 void WPADEnableMotor(BOOL enabled);
 BOOL WPADIsMotorEnabled(void);
@@ -666,7 +666,7 @@ void WPADSetAutoSamplingBuf(WPADChannel chan, void *buf, u32 length);
 
 BOOL WPADIsSpeakerEnabled(WPADChannel chan);
 WPADResult WPADControlSpeaker(WPADChannel chan, WPADSpeakerCommand command,
-                              WPADCallback *cb);
+                              WPADCallback cb);
 u8 WPADGetSpeakerVolume(void);
 void WPADSetSpeakerVolume(u8 vol);
 
@@ -676,9 +676,9 @@ u8 WPADGetDpdSensitivity(void);
 BOOL WPADIsDpdEnabled(WPADChannel chan);
 
 WPADResult WPADControlDpd(WPADChannel chan, WPADDpdCommand command,
-                          WPADCallback *cb);
+                          WPADCallback cb);
 WPADResult WPADControlBLC(WPADChannel chan, WPADBLCCommand command,
-                          WPADCallback *cb);
+                          WPADCallback cb);
 
 void WPADRecalibrate(WPADChannel chan);
 BOOL WPADIsUsedCallbackByKPAD(void);

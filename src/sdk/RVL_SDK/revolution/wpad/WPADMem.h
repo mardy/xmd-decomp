@@ -57,7 +57,7 @@ typedef struct WPADGameInfo
 
 WPADResult WPADWriteExtReg(WPADChannel chan, const void *data, u16 length,
                            WPADExtRegType extReg, u16 address,
-                           WPADCallback *cb);
+                           WPADCallback cb);
 
 #ifdef __cplusplus
 	}

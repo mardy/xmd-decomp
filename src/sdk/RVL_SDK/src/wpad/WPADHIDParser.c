@@ -803,7 +803,7 @@ static void __wpadGetExtConfig(WPADChannel chan, WPADResult result) {
     } else if (p_wpd->devType == WPAD_DEV_MOTION_PLUS
                || p_wpd->devType == WPAD_DEV_MPLS_PT_FS
                || p_wpd->devType == WPAD_DEV_MPLS_PT_CLASSIC
-               || p_wpd->devType == WPAD_DEV_MPLS_PT_UNKNOWN) {
+               || p_wpd->devType == WPAD_DEV_MPLS_PT_FUTURE) {
         p_wpd->noParseMplsCount = 5;
 
         p_wpd->extConfig.mpls.high.pitchZero = p_wpd->extConfig.mpls.high.yawZero =
@@ -1105,7 +1105,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
             if (_wpadDevType[chan] == WPAD_DEV_MOTION_PLUS
                 || _wpadDevType[chan] == WPAD_DEV_MPLS_PT_FS
                 || _wpadDevType[chan] == WPAD_DEV_MPLS_PT_CLASSIC
-                || _wpadDevType[chan] == WPAD_DEV_MPLS_PT_UNKNOWN) {
+                || _wpadDevType[chan] == WPAD_DEV_MPLS_PT_FUTURE) {
                 __wpadCertReset(chan);
                 p_wpd->certProbeStartingValue = data[7];
             } else {
@@ -1172,7 +1172,7 @@ static void __wpadGetExtType(WPADChannel chan, WPADResult result) {
                 p_wpd->wmReadDataBuf,
                 WM_EXTENSION_CONFIG_SIZE,
                 WM_REG_EXTENSION_CONFIG,
-                (WPADCallback *)p_wpd->extensionCB
+                (WPADCallback)p_wpd->extensionCB
             );
         }
     } else {
@@ -1460,7 +1460,7 @@ static void __a1_20_status_report(u8 chan, byte_t *hidReport, void *rxBuffer) {
     else
         p_wpd->wpInfo.battery = 0;
 
-    WPADExtensionCallback *extCB;
+    WPADExtensionCallback extCB;
     if (p_wpd->wpInfo.attach) {
         if (!currentlyHasExtension) {
             _wpadExtInitRetryCnt[chan] = 0;
@@ -1473,7 +1473,7 @@ static void __a1_20_status_report(u8 chan, byte_t *hidReport, void *rxBuffer) {
             __wpadCertReset(chan);
 
             if (extCB)
-                (*extCB)(chan, WPAD_DEV_INITIALIZING);
+                extCB(chan, WPAD_DEV_INITIALIZING);
         }
     } else {
         p_wpd->devType = WPAD_DEV_CORE;
@@ -1490,7 +1490,7 @@ static void __a1_20_status_report(u8 chan, byte_t *hidReport, void *rxBuffer) {
             __wpadCertReset(chan);
 
             if (p_wpd->extensionCB)
-                (*p_wpd->extensionCB)(chan, WPAD_DEV_CORE);
+                p_wpd->extensionCB(chan, WPAD_DEV_CORE);
         }
     }
 
@@ -1502,7 +1502,7 @@ static void __a1_20_status_report(u8 chan, byte_t *hidReport, void *rxBuffer) {
     RETRIEVE_BUTTON_STATE(chan, status, rxBuffer, hidReport);
 
     if (p_wpd->cmdBlkCB && p_wpd->statusReqBusy) {
-        (*p_wpd->cmdBlkCB)(chan, WPAD_ESUCCESS);
+        p_wpd->cmdBlkCB(chan, WPAD_ESUCCESS);
         p_wpd->cmdBlkCB = NULL;
     }
 
@@ -1528,7 +1528,7 @@ static void __a1_21_user_data(u8 chan, byte_t *hidReport, void *rxBuffer) {
 
         if (p_wpd->cmdBlkCB) {
             if (!p_wpd->extensionCB || p_wpd->extensionCB != p_wpd->cmdBlkCB)
-                (*p_wpd->cmdBlkCB)(chan, WPAD_ERR_TRANSFER);
+                p_wpd->cmdBlkCB(chan, WPAD_ERR_TRANSFER);
 
             p_wpd->cmdBlkCB = NULL;
         }
@@ -2141,7 +2141,7 @@ static void __parse_mp_data(
                     && p_wpd->devMode != WPAD_DEV_MODE_MPLS_PT_FS)
                 || (p_wpd->devType == WPAD_DEV_MPLS_PT_CLASSIC
                     && p_wpd->devMode != WPAD_DEV_MODE_MPLS_PT_CLASSIC)
-                || p_wpd->devType == WPAD_DEV_MPLS_PT_UNKNOWN) {
+                || p_wpd->devType == WPAD_DEV_MPLS_PT_FUTURE) {
                 // ~WPAD_MPLS_STATUS_EXTENSION_DATA_VALID
                 mpStatus[0]->stat &= 0xbf;
             } else {
@@ -2304,12 +2304,12 @@ static void __parse_mp_data(
             if (__OSInIPL)
                 p_wpd->devType = WPAD_DEV_MPLS_PT_CLASSIC;
             else
-                p_wpd->devType = WPAD_DEV_MPLS_PT_UNKNOWN;
+                p_wpd->devType = WPAD_DEV_MPLS_PT_FUTURE;
 
             break;
 
         default:
-            p_wpd->devType = WPAD_DEV_MPLS_PT_UNKNOWN;
+            p_wpd->devType = WPAD_DEV_MPLS_PT_FUTURE;
             break;
         }
 
@@ -2443,7 +2443,7 @@ static void __parse_ext_data(
         } else if (p_wpd->devType == WPAD_DEV_MOTION_PLUS
                    || p_wpd->devType == WPAD_DEV_MPLS_PT_FS
                    || p_wpd->devType == WPAD_DEV_MPLS_PT_CLASSIC
-                   || p_wpd->devType == WPAD_DEV_MPLS_PT_UNKNOWN) {
+                   || p_wpd->devType == WPAD_DEV_MPLS_PT_FUTURE) {
             __parse_mp_data(
                 chan,
                 (WPADMPStatus **)&parseBuf,

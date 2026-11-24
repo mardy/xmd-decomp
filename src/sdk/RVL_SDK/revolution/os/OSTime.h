@@ -10,6 +10,7 @@ typedef s64 OSTime;
 
 // Time base frequency = 1/4 bus clock
 #define OS_TIME_SPEED (OS_BUS_CLOCK_SPEED / 4)
+#define OS_TIMER_CLOCK OS_TIME_SPEED
 
 // OS time -> Real time
 #define OSTicksToSeconds(x) ((x) / (OS_TIME_SPEED))

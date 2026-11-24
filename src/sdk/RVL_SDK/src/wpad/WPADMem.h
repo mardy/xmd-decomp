@@ -23,7 +23,7 @@ struct WPADMemBlock {
     short at_0x08; // size 0x02, offset 0x08
     // 2 bytes padding (probably alignment, see WPADiClearMemBlock)
     int at_0x0c; // size 0x04, offset 0x0c
-    WPADCallback *at_0x10; // size 0x04, offset 0x10
+    WPADCallback at_0x10; // size 0x04, offset 0x10
 }; // size 0x14
 
 /*******************************************************************************

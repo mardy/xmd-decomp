@@ -94,7 +94,7 @@ enum WPADChannel_et
 	WPAD_CHAN_INVALID		= -1,
 };
 
-typedef s32 WPADDeviceType;
+typedef u32 WPADDeviceType;
 enum WPADDeviceType_et
 {
 	WPAD_DEV_CORE				=  0,

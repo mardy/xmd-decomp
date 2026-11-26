@@ -289,6 +289,7 @@ u8 KPADIsEnableAimingMode(s32 chan);
 void KPADSetSensorHeight(s32 chan, f32 level);
 f32 KPADGetSensorHeight(s32 chan);
 void KPADSetObjInterval(f32 interval);
+s32 KPADReadEx(WPADChannel chan, KPADStatus samplingBufs[], u32 length, s32 *outError);
 s32 KPADRead(s32 chan, KPADStatus samplingBufs[], u32 length);
 s32 KPADiRead(s32 chan, KPADStatus samplingBufs[], u32 length, s32* err, BOOL ex);
 void KPADInit(void);

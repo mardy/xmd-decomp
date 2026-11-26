@@ -1636,12 +1636,14 @@ static void __parse_dpd_data(
     WPADChannel chan, WPADStatus **status, u8 dpdFormat, byte_t *data, u8 length
 ) {
     wpad_cb_st *p_wpd = __rvl_p_wpadcb[chan];
+        DPDObject *obj;
 
     if (p_wpd->dpdBusy) {
         status[0]->err = WPAD_EINVAL;
         return;
     }
 
+    {
     u8 i;
     u8 a, b, c;
     if (dpdFormat == WPAD_DPD_STANDARD) {
@@ -1698,14 +1700,19 @@ static void __parse_dpd_data(
             status[0]->obj[i].traceId = i;
         }
     }
+    }
 
+    {
+    for (u8 i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
+        obj = &status[0]->obj[i];
+        if (obj->x != 0 || status[0]->obj[i].y != DPD_MAX_Y) {
     f32 fx, fy;
-    for (i = 0; i < WPAD_DPD_MAX_OBJECTS; i++) {
-        if (status[0]->obj[i].x != 0 || status[0]->obj[i].y != DPD_MAX_Y) {
-            fx = (f32)status[0]->obj[i].x + _wpadCalibrationX[chan] - _wpadCenterX[chan];
-            fy = (f32)status[0]->obj[i].y + _wpadCalibrationY[chan] - _wpadCenterY[chan];
+            fx = obj->x;
+            fx += _wpadCalibrationX[chan];
+            fx -= _wpadCenterX[chan];
+            fy = status[0]->obj[i].y + _wpadCalibrationY[chan] - _wpadCenterY[chan];
 
-            status[0]->obj[i].x = _wpadCenterX[chan]
+            obj->x = _wpadCenterX[chan]
                 + ((fx * (f32)cos(_wpadRolag[chan] * -1.0f))
                    - (fy * (f32)sin(_wpadRolag[chan] * -1.0f)));
 
@@ -1713,6 +1720,7 @@ static void __parse_dpd_data(
                 + ((fx * (f32)sin(_wpadRolag[chan] * -1.0f))
                    + (fy * (f32)cos(_wpadRolag[chan] * -1.0f)));
         }
+    }
     }
 }
 

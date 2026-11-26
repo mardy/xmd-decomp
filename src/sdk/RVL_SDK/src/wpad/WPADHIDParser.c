@@ -1527,7 +1527,7 @@ static void __a1_21_user_data(u8 chan, byte_t *hidReport, void *rxBuffer) {
         p_wpd->wmReadHadError = -1;
 
         if (p_wpd->cmdBlkCB) {
-            if (!p_wpd->extensionCB || p_wpd->extensionCB != p_wpd->cmdBlkCB)
+            if (!p_wpd->extensionCB || p_wpd->extensionCB != (WPADExtensionCallback)p_wpd->cmdBlkCB)
                 p_wpd->cmdBlkCB(chan, WPAD_ERR_TRANSFER);
 
             p_wpd->cmdBlkCB = NULL;
